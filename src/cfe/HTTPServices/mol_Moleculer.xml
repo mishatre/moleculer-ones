@@ -17,15 +17,15 @@
 		<ChildObjects>
 			<URLTemplate uuid="49eb36f7-333c-4af1-a355-3fa3db3fc90a">
 				<Properties>
-					<Name>Gateway</Name>
+					<Name>DefaultGateway</Name>
 					<Synonym>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
-							<v8:content>Gateway</v8:content>
+							<v8:content>Default gateway</v8:content>
 						</v8:item>
 					</Synonym>
 					<Comment/>
-					<Template>/gateway</Template>
+					<Template>/{Type}</Template>
 				</Properties>
 				<ChildObjects>
 					<Method uuid="296bd0c5-5e29-4445-aecc-acf1dce60acf">

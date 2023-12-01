@@ -12,20 +12,20 @@ Procedure Service(Schema, Builder) Export
 	
 	Schema.Name    = "example";
 	Schema.Version = 1;
-
-	Schema.Started = "Started";
-	Schema.Stopped = "Stopped";
 	
-	Schema.Metadata.Insert("$name"       , "example-service");
-	Schema.Metadata.Insert("$description", "External node example service");
-	Schema.Metadata.Insert("$official"   , False);
+	Builder.OnStarted(Schema);
+	Builder.OnStopped(Schema);
+	
+	Builder.Meta(Schema, "$name"       , "example-service");
+	Builder.Meta(Schema, "$description", "External node example service");
+	Builder.Meta(Schema, "$official"   , False);
 
-	Action = Builder.NewAction(Schema, "ExampleAction");
+	Action = Builder.Action(Schema, "ExampleAction");
 	Action.Name        = "example-action";
 	Action.Description = "This is example action";
 	//Action.Cache       = True;
 	
-	Event = Builder.NewEvent(Schema, "ExampleEvent");
+	Event = Builder.Event(Schema, "ExampleEvent");
 	Event.Name        = "example-event";
 	Event.Description = "This is example event";
 	
@@ -36,7 +36,7 @@ EndProcedure
 // Parameters:
 //  Context - Service context
 //
-Procedure Started(Context) Export	
+Procedure Started(Context) Export
 	
 	WriteLogEvent(
 		"Moleculer.Service.Started",
@@ -55,7 +55,7 @@ EndProcedure
 // Parameters:
 //  Context - Service context
 //
-Procedure Stopped(Context) Export	
+Procedure Stopped(Context) Export
 	
 	WriteLogEvent(
 		"Moleculer.Service.Stopped",
@@ -86,7 +86,6 @@ EndFunction
 
 #Region Events
 
-
 Function ExampleEvent(Context) Export
 	
 	WriteLogEvent(
@@ -107,7 +106,5 @@ EndFunction
 #EndRegion
 
 #Region Private
-
-
 
 #EndRegion

@@ -1,6 +1,26 @@
 ﻿
 #Region Public 
 
+#Region ServiceBuilderOptions
+
+Function OnStarted(Schema, Handler = "Started") Export
+	
+	Schema.Started = NewHandler(Schema, Handler);	
+	
+EndFunction
+
+Function OnStopped(Schema, Handler = "Stopped") Export
+
+	Schema.Stopped = NewHandler(Schema, Handler);	
+	
+EndFunction
+
+Function Meta(Schema, Name, Value) Export
+
+	Schema.Metadata.Insert(Name, Value);
+	
+EndFunction
+
 // Create new action definition
 //
 // Parameters:
@@ -9,14 +29,14 @@
 //
 // Returns:
 //  NewAction - Structure - See. NewActionSchema()
-Function NewAction(Schema, Handler) Export
+Function Action(Schema, Handler) Export
 
-	NewAction = NewActionSchema();
-	NewAction.Handler = Handler; 
+	NewElement = NewActionSchema();
+	NewElement.Handler = NewHandler(Schema, Handler); 
 	
-	Schema.Actions.Add(NewAction);
+	Schema.Actions.Add(NewElement);
 	
-	Return NewAction;
+	Return NewElement;
 	
 EndFunction
 
@@ -28,87 +48,28 @@ EndFunction
 //
 // Returns:
 //  NewEvent - Structure - See. NewEventSchema()
-Function NewEvent(Schema, Handler) Export
+Function Event(Schema, Handler) Export
 
-	NewEvent = NewEventSchema();
-	NewEvent.Handler = Handler; 
+	NewElement = NewEventSchema();
+	NewElement.Handler = NewHandler(Schema, Handler); 
 	
-	Schema.Events.Add(NewEvent);
+	Schema.Events.Add(NewElement);
 	
-	Return NewEvent;
+	Return NewElement;
 	
 EndFunction
 
-Function GetServiceModuleSchema(ServiceName) Export
-	Return mol_SchemaBuilderReuse.GetServiceModuleSchema(ServiceName);		
-EndFunction
-
-Function GetServiceModuleNames(ServiceModulePrefix = "Service") Export
-	Return mol_SchemaBuilderReuse.GetNodeServiceNames(ServiceModulePrefix);	
-EndFunction
+#EndRegion
 
 #EndRegion
 
 #Region Protected
 
-// Build service module schema by calling "Service" function inside service module
-//
-// Parameters:
-//  ModuleName - String - Module name
-//  Module     - CommonModule.mol_SchemaBuilder - Reference to current module to assist with schema creation
-// 
-// Returns:
-//  Structure: See. mol_Internal.NewResponse()
-//  	* Result - Structure, Undefined - New service schema
-//  	* Error  - Structure, Undefined - Schema create error
-//
-Function BuildServiceSchema(ModuleName, Module) Export
-
-	Schema = NewSchema();	
-	BuilderModule = Eval("mol_SchemaBuilder");
-	
-	Try
-		SetSafeMode(True);
-		Module.Service(Schema, BuilderModule);	
-		SetSafeMode(False);
-	Except
-		ErrorInfo = ErrorInfo();
-		Return mol_Internal.NewResponse(
-			mol_Errors.ServiceSchemaError(
-				"Error evaluating service schema", 
-				ErrorProcessing.DetailErrorDescription(ErrorInfo)
-			)
-		);			
-	EndTry;
-	
-	Return mol_Internal.NewResponse(Undefined, Schema);
- 	
-EndFunction
-
-Function GetNodeServiceNames(ServiceModulePrefix) Export 
-		
-	ServiceNames = New Array();
-	
-	CommonModules = Metadata.CommonModules;
-	For Each ModuleMetadata In CommonModules Do
-		If StrStartsWith(ModuleMetadata.Name, ServiceModulePrefix) Then
-			ServiceNames.Add(ModuleMetadata.Name);		
-		EndIf;
-	EndDo;  
-	
-	// Internal service
-	ServiceNames.Add("mol_InternalService");
-	ServiceNames.add("mol_RegistryService");
-	
-	Return ServiceNames;
-	
-EndFunction
-
 #EndRegion
 
 #Region Private 
 
-Function NewSchema()
+Function NewSchema(ModuleName = "") Export
 	
 	// Map is used to allow internal settings ($noVersionPrefix)
 
@@ -127,7 +88,9 @@ Function NewSchema()
 	Result.Insert("started"      , Undefined);
 	Result.Insert("stopped"      , Undefined);
 
-	Result.Insert("channels"     , New Array);
+	Result.Insert("channels"     , New Array); 
+	
+	Result.Insert("_ModuleName"  , ModuleName);
 	
 	Return Result;
 	
@@ -153,6 +116,7 @@ Function NewActionSchema()
 	Result.Insert("retryPolicy"   , Undefined); // retryPolicy?: RetryPolicyOptions;
 	Result.Insert("fallback"      , Undefined); // fallback?: string | FallbackHandler;
 	Result.Insert("hooks"         , Undefined); // hooks?: ActionHooks;
+	Result.Insert("version"       , Undefined);
 	
 	Result.Insert("description"   , ""       );
 	
@@ -187,6 +151,10 @@ Function NewRestSchema()
 	
 	Return Result;
 	
+EndFunction
+
+Function NewHandler(Schema, Handler)
+	Return StrTemplate("%1.%2", Schema._ModuleName, Handler);	
 EndFunction
 
 #EndRegion

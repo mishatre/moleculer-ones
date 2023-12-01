@@ -65,6 +65,8 @@
 		</Properties>
 		<ChildObjects>
 			<Language>Русский</Language>
+			<Language>English</Language>
+			<Subsystem>Moleculer</Subsystem>
 			<StyleItem>mol_SelectionColor</StyleItem>
 			<StyleItem>mol_ЦветФона</StyleItem>
 			<StyleItem>mol_VersionBackColor</StyleItem>
@@ -85,34 +87,27 @@
 			<CommonPicture>mol_Play</CommonPicture>
 			<CommonPicture>mol_PlayActive</CommonPicture>
 			<Role>mol_ОсновнаяРоль</Role>
-			<CommonModule>mol_AwsSigning</CommonModule>
-			<CommonModule>mol_Crypto</CommonModule>
 			<CommonModule>mol_Errors</CommonModule>
-			<CommonModule>mol_Gateway</CommonModule>
 			<CommonModule>mol_Internal</CommonModule>
 			<CommonModule>mol_InternalReuse</CommonModule>
-			<CommonModule>mol_InternalActions</CommonModule>
 			<CommonModule>mol_InternalHelpers</CommonModule>
-			<CommonModule>mol_InternalService</CommonModule>
-			<CommonModule>mol_JWTSigning</CommonModule>
-			<CommonModule>mol_RegistryService</CommonModule>
-			<CommonModule>ServiceExample</CommonModule>
-			<CommonModule>Mol</CommonModule>
+			<CommonModule>mol_InternalHelpersReuse</CommonModule>
 			<CommonModule>mol_SchemaBuilder</CommonModule>
-			<CommonModule>mol_SchemaBuilderReuse</CommonModule>
 			<CommonModule>mol_Logger</CommonModule>
-			<CommonModule>mol_CryptoReuse</CommonModule>
+			<CommonModule>Moleculer</CommonModule>
+			<CommonModule>ServiceExample</CommonModule>
 			<HTTPService>mol_Moleculer</HTTPService>
 			<Constant>mol_Endpoint</Constant>
 			<Constant>mol_Port</Constant>
 			<Constant>mol_UseSSL</Constant>
 			<Constant>mol_SecretKey</Constant>
 			<Constant>mol_AccessKey</Constant>
-			<Constant>mol_NodeID</Constant>
+			<Constant>mol_NodeName</Constant>
+			<Constant>mol_NodePublicationName</Constant>
 			<Constant>mol_NodeEndpoint</Constant>
 			<Constant>mol_NodePort</Constant>
 			<Constant>mol_NodeUseSSL</Constant>
-			<DataProcessor>mol_Laboratory</DataProcessor>
+			<Constant>mol_NodeSecretKey</Constant>
 			<DataProcessor>mol_Registry</DataProcessor>
 		</ChildObjects>
 	</Configuration>

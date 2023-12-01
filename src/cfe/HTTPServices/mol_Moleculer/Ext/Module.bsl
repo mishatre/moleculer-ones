@@ -1,4 +1,4 @@
 ﻿			
 Function GatewayPOST(Request)       
-	Return mol_Gateway.HandleGatewayRequest(Request);
+	Return mol_Internal.HandleIncomingServiceRequest(Request);
 EndFunction

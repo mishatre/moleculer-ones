@@ -1,6 +1,8 @@
 ﻿
 #Region Protected
 
+#Region Crypto
+
 Function GetAlignmentBuffer(BlockSize, Value) Export
 
 	AlignmentBuffer = New BinaryDataBuffer(BlockSize);
@@ -11,5 +13,7 @@ Function GetAlignmentBuffer(BlockSize, Value) Export
 	Return AlignmentBuffer;
 	
 EndFunction
+
+#EndRegion 
 
 #EndRegion

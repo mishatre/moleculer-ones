@@ -1,4 +1,6 @@
 ﻿
+#Region Protected
+
 Function GetHTTPConnection(Protocol, Host, Port, Timeout) Export
 
 	SecureConnection = Undefined;
@@ -19,3 +21,31 @@ Function GetHTTPConnection(Protocol, Host, Port, Timeout) Export
 	Return HTTPConnection;
 	
 EndFunction
+
+#Region Settings
+
+Function GetSidecarConnectionSettings() Export
+	Return mol_Internal.GetSidecarConnectionSettings(True);	
+EndFunction
+
+#EndRegion  
+
+#Region Schema
+
+Function GetServiceModuleNames(ServiceModulePrefix) Export
+	
+	Return mol_Internal.GetServiceModuleNames(ServiceModulePrefix, True);
+	
+EndFunction
+
+Function GetServiceSchemas() Export
+	Return mol_Internal.GetServiceSchemas(True);	
+EndFunction
+
+#EndRegion
+
+#EndRegion
+
+#Region Private
+
+#EndRegion
