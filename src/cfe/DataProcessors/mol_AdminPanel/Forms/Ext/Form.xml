@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcssch="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.16">
-	<AutoCommandBar name="FormCommandBar" id="-1"/>
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
 	<Events>
 		<Event name="OnOpen">OnOpen</Event>
 		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
@@ -10,6 +12,10 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Регистрация узла</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Node registration</v8:content>
 				</v8:item>
 			</Title>
@@ -45,6 +51,10 @@
 							<ToolTip>
 								<v8:item>
 									<v8:lang>ru</v8:lang>
+									<v8:content>Идентификатор информационной базы. Должен быть уникальным</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>en</v8:lang>
 									<v8:content>Infobase node id. Must be unique</v8:content>
 								</v8:item>
 							</ToolTip>
@@ -136,6 +146,10 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Подключение к Moleculer</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Moleculer connection</v8:content>
 				</v8:item>
 			</Title>
@@ -147,6 +161,10 @@
 					<Title>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
+							<v8:content>Тип подключения</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
 							<v8:content>Connection type</v8:content>
 						</v8:item>
 					</Title>
@@ -174,6 +192,10 @@
 										<Presentation>
 											<v8:item>
 												<v8:lang>ru</v8:lang>
+												<v8:content>Использовать Sidecar для подключения</v8:content>
+											</v8:item>
+											<v8:item>
+												<v8:lang>en</v8:lang>
 												<v8:content>Use Sidecar for connection</v8:content>
 											</v8:item>
 										</Presentation>
@@ -187,6 +209,10 @@
 										<Presentation>
 											<v8:item>
 												<v8:lang>ru</v8:lang>
+												<v8:content>Использовать плагин NativeAPI для прямого подключения (не реализовано)</v8:content>
+											</v8:item>
+											<v8:item>
+												<v8:lang>en</v8:lang>
 												<v8:content>Use Native API addon for direct connection (unimplimented)</v8:content>
 											</v8:item>
 										</Presentation>
@@ -235,6 +261,10 @@
 											<Title>
 												<v8:item>
 													<v8:lang>ru</v8:lang>
+													<v8:content>Параметры подключения Sidecar</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>en</v8:lang>
 													<v8:content>Sidecar connection</v8:content>
 												</v8:item>
 											</Title>
@@ -287,6 +317,10 @@
 											<Title>
 												<v8:item>
 													<v8:lang>ru</v8:lang>
+													<v8:content>Авторизация узла Sidecar</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>en</v8:lang>
 													<v8:content>Sidecar authentication</v8:content>
 												</v8:item>
 											</Title>
@@ -359,6 +393,190 @@
 												</UsualGroup>
 											</ChildItems>
 										</UsualGroup>
+										<UsualGroup name="GroupSidecarUseProxy" id="149">
+											<Title>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Прокси</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>en</v8:lang>
+													<v8:content>Proxy</v8:content>
+												</v8:item>
+											</Title>
+											<ToolTip>
+												<v8:item>
+													<v8:lang>ru</v8:lang>
+													<v8:content>Group sidecar use proxy</v8:content>
+												</v8:item>
+											</ToolTip>
+											<Group>Vertical</Group>
+											<Behavior>Collapsible</Behavior>
+											<Collapsed>true</Collapsed>
+											<ControlRepresentation>Picture</ControlRepresentation>
+											<Representation>None</Representation>
+											<ExtendedTooltip name="GroupSidecarUseProxyExtendedTooltip" id="150"/>
+											<ChildItems>
+												<CheckBoxField name="mol_UseProxyForConnection" id="151">
+													<DataPath>ConstantsSet.mol_UseProxyForConnection</DataPath>
+													<TitleLocation>Right</TitleLocation>
+													<CheckBoxType>Auto</CheckBoxType>
+													<ContextMenu name="mol_UseProxyForConnectionContextMenu" id="152"/>
+													<ExtendedTooltip name="mol_UseProxyForConnectionExtendedTooltip" id="153"/>
+													<Events>
+														<Event name="OnChange">mol_UseProxyForConnectionOnChange</Event>
+													</Events>
+												</CheckBoxField>
+												<UsualGroup name="GroupSidecarUseProxyConnection" id="154">
+													<Title>
+														<v8:item>
+															<v8:lang>ru</v8:lang>
+															<v8:content>Group sidecar use proxy connection</v8:content>
+														</v8:item>
+													</Title>
+													<ToolTip>
+														<v8:item>
+															<v8:lang>ru</v8:lang>
+															<v8:content>Group sidecar use proxy connection</v8:content>
+														</v8:item>
+													</ToolTip>
+													<Group>Vertical</Group>
+													<Representation>None</Representation>
+													<ShowTitle>false</ShowTitle>
+													<ExtendedTooltip name="GroupSidecarUseProxyConnectionExtendedTooltip" id="155"/>
+													<ChildItems>
+														<RadioButtonField name="mol_ProxyProtocol" id="156">
+															<DataPath>ConstantsSet.mol_ProxyProtocol</DataPath>
+															<RadioButtonType>Auto</RadioButtonType>
+															<ChoiceList>
+																<xr:Item>
+																	<xr:Presentation/>
+																	<xr:CheckState>0</xr:CheckState>
+																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																		<Presentation>
+																			<v8:item>
+																				<v8:lang>ru</v8:lang>
+																				<v8:content>http:</v8:content>
+																			</v8:item>
+																		</Presentation>
+																		<Value xsi:type="xs:string">http</Value>
+																	</xr:Value>
+																</xr:Item>
+																<xr:Item>
+																	<xr:Presentation/>
+																	<xr:CheckState>0</xr:CheckState>
+																	<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																		<Presentation>
+																			<v8:item>
+																				<v8:lang>ru</v8:lang>
+																				<v8:content>https:</v8:content>
+																			</v8:item>
+																		</Presentation>
+																		<Value xsi:type="xs:string">https</Value>
+																	</xr:Value>
+																</xr:Item>
+															</ChoiceList>
+															<ContextMenu name="mol_ProxyProtocolContextMenu" id="157"/>
+															<ExtendedTooltip name="mol_ProxyProtocolExtendedTooltip" id="158"/>
+															<Events>
+																<Event name="OnChange">mol_ProxyProtocolOnChange</Event>
+															</Events>
+														</RadioButtonField>
+														<UsualGroup name="SubgroupSidecarUseProxyConnection" id="165">
+															<Title>
+																<v8:item>
+																	<v8:lang>ru</v8:lang>
+																	<v8:content>Subgroup sidecar use proxy connection</v8:content>
+																</v8:item>
+															</Title>
+															<ToolTip>
+																<v8:item>
+																	<v8:lang>ru</v8:lang>
+																	<v8:content>Subgroup sidecar use proxy connection</v8:content>
+																</v8:item>
+															</ToolTip>
+															<Representation>None</Representation>
+															<ShowTitle>false</ShowTitle>
+															<ExtendedTooltip name="SubgroupSidecarUseProxyConnectionExtendedTooltip" id="166"/>
+															<ChildItems>
+																<InputField name="mol_ProxyServer" id="159">
+																	<DataPath>ConstantsSet.mol_ProxyServer</DataPath>
+																	<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+																	<ContextMenu name="mol_ProxyServerContextMenu" id="160"/>
+																	<ExtendedTooltip name="mol_ProxyServerExtendedTooltip" id="161"/>
+																	<Events>
+																		<Event name="OnChange">mol_ProxyServerOnChange</Event>
+																	</Events>
+																</InputField>
+																<InputField name="mol_ProxyPort" id="162">
+																	<DataPath>ConstantsSet.mol_ProxyPort</DataPath>
+																	<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+																	<EditFormat>
+																		<v8:item>
+																			<v8:lang>ru</v8:lang>
+																			<v8:content>NZ=; NG=</v8:content>
+																		</v8:item>
+																	</EditFormat>
+																	<MinValue xsi:type="xs:decimal">1</MinValue>
+																	<MaxValue xsi:type="xs:decimal">65536</MaxValue>
+																	<ContextMenu name="mol_ProxyPortContextMenu" id="163"/>
+																	<ExtendedTooltip name="mol_ProxyPortExtendedTooltip" id="164"/>
+																	<Events>
+																		<Event name="OnChange">mol_ProxyPortOnChange</Event>
+																	</Events>
+																</InputField>
+															</ChildItems>
+														</UsualGroup>
+														<UsualGroup name="SubgroupSidecarUseProxyAuth" id="167">
+															<Title>
+																<v8:item>
+																	<v8:lang>ru</v8:lang>
+																	<v8:content>Авторизация</v8:content>
+																</v8:item>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>Authentication</v8:content>
+																</v8:item>
+															</Title>
+															<ToolTip>
+																<v8:item>
+																	<v8:lang>ru</v8:lang>
+																	<v8:content>Subgroup sidecar use proxy connection</v8:content>
+																</v8:item>
+															</ToolTip>
+															<Group>Vertical</Group>
+															<Representation>None</Representation>
+															<ExtendedTooltip name="SubgroupSidecarUseProxyAuthExtendedTooltip" id="168"/>
+															<ChildItems>
+																<InputField name="mol_ProxyUser" id="175">
+																	<DataPath>ConstantsSet.mol_ProxyUser</DataPath>
+																	<Width>20</Width>
+																	<HorizontalStretch>false</HorizontalStretch>
+																	<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+																	<ContextMenu name="mol_ProxyUserContextMenu" id="176"/>
+																	<ExtendedTooltip name="mol_ProxyUserExtendedTooltip" id="177"/>
+																	<Events>
+																		<Event name="OnChange">mol_ProxyUserOnChange</Event>
+																	</Events>
+																</InputField>
+																<InputField name="mol_ProxyPassword" id="178">
+																	<DataPath>ConstantsSet.mol_ProxyPassword</DataPath>
+																	<Width>20</Width>
+																	<HorizontalStretch>false</HorizontalStretch>
+																	<PasswordMode>true</PasswordMode>
+																	<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+																	<ContextMenu name="mol_ProxyPasswordContextMenu" id="179"/>
+																	<ExtendedTooltip name="mol_ProxyPasswordExtendedTooltip" id="180"/>
+																	<Events>
+																		<Event name="OnChange">mol_ProxyPasswordOnChange</Event>
+																	</Events>
+																</InputField>
+															</ChildItems>
+														</UsualGroup>
+													</ChildItems>
+												</UsualGroup>
+											</ChildItems>
+										</UsualGroup>
 										<UsualGroup name="GroupSidecarTestConnection" id="45">
 											<Title>
 												<v8:item>
@@ -426,6 +644,10 @@
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Публикация внутренних сервисов</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Internal service publication</v8:content>
 				</v8:item>
 			</Title>
@@ -479,16 +701,14 @@
 							<ChildItems>
 								<CheckBoxField name="mol_PublishServices" id="21">
 									<DataPath>ConstantsSet.mol_PublishServices</DataPath>
-									<Title>
-										<v8:item>
-											<v8:lang>ru</v8:lang>
-											<v8:content>Publish services</v8:content>
-										</v8:item>
-									</Title>
 									<TitleLocation>Right</TitleLocation>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
+											<v8:content>Позовляет сервисам внутри сети Moleculer осуществлять вызов внутренних сервисов информационной базы, получать события</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>en</v8:lang>
 											<v8:content>Allow nodes inside Moleculer network 
 to call services published by infobase, receive events</v8:content>
 										</v8:item>
@@ -509,6 +729,10 @@ to call services published by infobase, receive events</v8:content>
 										<Title formatted="false">
 											<v8:item>
 												<v8:lang>ru</v8:lang>
+												<v8:content>Управление публикуемыми внутренними сервисами</v8:content>
+											</v8:item>
+											<v8:item>
+												<v8:lang>en</v8:lang>
 												<v8:content>Manage internal service publication</v8:content>
 											</v8:item>
 										</Title>
@@ -521,6 +745,14 @@ to call services published by infobase, receive events</v8:content>
 							<ToolTip>
 								<v8:item>
 									<v8:lang>ru</v8:lang>
+									<v8:content>Область имени узла.
+Ко всем опубликованным действиям (action) этого узла будет автоматически добавлено значение в этом поле.
+Пример: 
+    &lt;namespace&gt;.service_name.action_name
+v1.&lt;namespace&gt;.service_name.action_name</v8:content>
+								</v8:item>
+								<v8:item>
+									<v8:lang>en</v8:lang>
 									<v8:content>Node namespace. 
 All actions registered by this node will be prepended with this namespace. Must be unique across Moleculer network
 Example: 
@@ -559,6 +791,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 									<Title>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
+											<v8:content>Параметры публикации</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>en</v8:lang>
 											<v8:content>Publication connection</v8:content>
 										</v8:item>
 									</Title>
@@ -672,6 +908,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 											<Title>
 												<v8:item>
 													<v8:lang>ru</v8:lang>
+													<v8:content>Авторизация</v8:content>
+												</v8:item>
+												<v8:item>
+													<v8:lang>en</v8:lang>
 													<v8:content>Authentication</v8:content>
 												</v8:item>
 											</Title>
@@ -692,6 +932,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 													<ToolTip>
 														<v8:item>
 															<v8:lang>ru</v8:lang>
+															<v8:content>Пользователь под которым будут вызываться внутренние сервисы</v8:content>
+														</v8:item>
+														<v8:item>
+															<v8:lang>en</v8:lang>
 															<v8:content>User under which requests to internal services are made</v8:content>
 														</v8:item>
 													</ToolTip>
@@ -716,6 +960,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 													<ToolTip>
 														<v8:item>
 															<v8:lang>ru</v8:lang>
+															<v8:content>Для использования токена доступа, у выбранного пользователя должен быть разрешен вход с его использованием и настройки публикации должны разрешать для него вход </v8:content>
+														</v8:item>
+														<v8:item>
+															<v8:lang>en</v8:lang>
 															<v8:content>To use access token auth, selected user must have enabled token auth and correctly configured service publication</v8:content>
 														</v8:item>
 													</ToolTip>
@@ -730,10 +978,14 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 																<Presentation>
 																	<v8:item>
 																		<v8:lang>ru</v8:lang>
-																		<v8:content>Using password (not recommended)</v8:content>
+																		<v8:content>Без авторизации (не рекомендуется)</v8:content>
+																	</v8:item>
+																	<v8:item>
+																		<v8:lang>en</v8:lang>
+																		<v8:content>No auth (not recommended)</v8:content>
 																	</v8:item>
 																</Presentation>
-																<Value xsi:type="xr:DesignTimeRef">Enum.mol_NodeAuthorizationType.EnumValue.UsingPassword</Value>
+																<Value xsi:type="xr:DesignTimeRef">Enum.mol_AuthorizationType.EnumValue.NoAuth</Value>
 															</xr:Value>
 														</xr:Item>
 														<xr:Item>
@@ -743,10 +995,31 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 																<Presentation>
 																	<v8:item>
 																		<v8:lang>ru</v8:lang>
+																		<v8:content>Используя пароль (не рекомендуется)</v8:content>
+																	</v8:item>
+																	<v8:item>
+																		<v8:lang>en</v8:lang>
+																		<v8:content>Using password (not recommended)</v8:content>
+																	</v8:item>
+																</Presentation>
+																<Value xsi:type="xr:DesignTimeRef">Enum.mol_AuthorizationType.EnumValue.UsingPassword</Value>
+															</xr:Value>
+														</xr:Item>
+														<xr:Item>
+															<xr:Presentation/>
+															<xr:CheckState>0</xr:CheckState>
+															<xr:Value xsi:type="FormChoiceListDesTimeValue">
+																<Presentation>
+																	<v8:item>
+																		<v8:lang>ru</v8:lang>
+																		<v8:content>Используя токен доступа</v8:content>
+																	</v8:item>
+																	<v8:item>
+																		<v8:lang>en</v8:lang>
 																		<v8:content>Using access token</v8:content>
 																	</v8:item>
 																</Presentation>
-																<Value xsi:type="xr:DesignTimeRef">Enum.mol_NodeAuthorizationType.EnumValue.UsingAccessToken</Value>
+																<Value xsi:type="xr:DesignTimeRef">Enum.mol_AuthorizationType.EnumValue.UsingAccessToken</Value>
 															</xr:Value>
 														</xr:Item>
 													</ChoiceList>
@@ -868,7 +1141,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 													<ContextMenu name="TestPublicationAccessibilityStatusContextMenu" id="121"/>
 													<ExtendedTooltip name="TestPublicationAccessibilityStatusExtendedTooltip" id="122"/>
 													<Events>
-														<Event name="Click">TestPublicationAccessibilityStatusClick</Event>
+														<Event name="URLProcessing">TestPublicationAccessibilityStatusURLProcessing</Event>
 													</Events>
 												</LabelField>
 											</ChildItems>
@@ -883,6 +1156,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 					<Title>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
+							<v8:content>Динамические сервисы</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
 							<v8:content>Dynamic services</v8:content>
 						</v8:item>
 					</Title>
@@ -918,6 +1195,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 									<ToolTip>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
+											<v8:content>Позволяет динамически создавать и публиковать сервисы (без внесения изменений в конфигурацию)</v8:content>
+										</v8:item>
+										<v8:item>
+											<v8:lang>en</v8:lang>
 											<v8:content>Allow dynamically create and publish internal service 
 (without changes in configuration)
 </v8:content>
@@ -939,6 +1220,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 										<Title formatted="false">
 											<v8:item>
 												<v8:lang>ru</v8:lang>
+												<v8:content>Динамические сервисы определяются в отдельном справочнике и дополнительно повышают нагрузку на сервер</v8:content>
+											</v8:item>
+											<v8:item>
+												<v8:lang>en</v8:lang>
 												<v8:content>Dynamic services defined in separate catalog and require additional server cost for each call</v8:content>
 											</v8:item>
 										</Title>
@@ -1000,6 +1285,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Пользователь</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>User</v8:content>
 				</v8:item>
 			</Title>
@@ -1026,6 +1315,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Статус узла</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Node status</v8:content>
 				</v8:item>
 			</Title>
@@ -1060,6 +1353,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Проверить подключение</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Test connection</v8:content>
 				</v8:item>
 			</Title>
@@ -1075,6 +1372,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Внутренние сервисы</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Internal services</v8:content>
 				</v8:item>
 			</Title>
@@ -1090,6 +1391,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Проверить подключение Sidecar к информационной базе</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Test publication accessibility</v8:content>
 				</v8:item>
 			</Title>
@@ -1105,6 +1410,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Управление динамическими сервисами</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Manage dynamic services</v8:content>
 				</v8:item>
 			</Title>
@@ -1119,6 +1428,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Зарегистрировать узел</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Register node</v8:content>
 				</v8:item>
 			</Title>
@@ -1128,6 +1441,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Отменить регистрацию узла</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Unregister node</v8:content>
 				</v8:item>
 			</Title>
@@ -1137,6 +1454,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Обновить статус</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Check registration</v8:content>
 				</v8:item>
 			</Title>

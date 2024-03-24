@@ -6,6 +6,10 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
+					<v8:content>Информация об узле Sidecar</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
 					<v8:content>Moleculer sidecar service info</v8:content>
 				</v8:item>
 			</Synonym>

@@ -139,6 +139,10 @@ Procedure SetItemsAvailability(DataPathAttribute = "")
 			Items.PagesConnectionType.CurrentPage = Items.PageConnectionTypeNativeAPI;	
 		EndIf;
 		
+	EndIf;    
+	
+	If DataPathAttribute = "ConstantsSet.mol_UseProxyForConnection" Or DataPathAttribute = "" Then
+		Items.GroupSidecarUseProxyConnection.Enabled = ConstantsSet.mol_UseProxyForConnection;	
 	EndIf;
 	
 	If DataPathAttribute = "ConstantsSet.mol_PublishServices" Or DataPathAttribute = "" Then
@@ -151,16 +155,24 @@ Procedure SetItemsAvailability(DataPathAttribute = "")
 	EndIf;    
 	
 	If DataPathAttribute = "ConstantsSet.mol_NodeAuthorizationType" Or DataPathAttribute = "" Then
-		If ConstantsSet.mol_NodeAuthorizationType = Enums.mol_NodeAuthorizationType.UsingPassword Then
+		If ConstantsSet.mol_NodeAuthorizationType = Enums.mol_AuthorizationType.NoAuth Then
+			Items.Constantmol_NodeUser.Enabled = False;
+			Items.PagesSidecarPublicationAuthorizationType.Visible = False;   
+		Else
+			Items.Constantmol_NodeUser.Enabled = True;
+			Items.PagesSidecarPublicationAuthorizationType.Visible = True;	
+		EndIf;
+		If ConstantsSet.mol_NodeAuthorizationType = Enums.mol_AuthorizationType.UsingPassword Then
 			Items.PagesSidecarPublicationAuthorizationType.CurrentPage = Items.PageSidecarPublicationAuthorizationTypeBasic;	
-		ElsIf ConstantsSet.mol_NodeAuthorizationType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+		ElsIf ConstantsSet.mol_NodeAuthorizationType = Enums.mol_AuthorizationType.UsingAccessToken Then
 			Items.PagesSidecarPublicationAuthorizationType.CurrentPage = Items.PageSidecarPublicationAuthorizationTypeAccessToken;	
 		EndIf;
 	EndIf;
 	
 	If DataPathAttribute = "ConstantsSet.mol_UseDynamicServices" Or DataPathAttribute = "" Then
 		Items.OpenDynamicServices.Enabled = ConstantsSet.mol_UseDynamicServices;
-	EndIf;
+	EndIf;   
+	
 	
 EndProcedure  
 
@@ -344,25 +356,6 @@ Procedure mol_NodePublicationPathOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure TestPublicationAccessibilityStatusClick(Item, StandardProcessing)
-	
-	StandardProcessing = False;
-	Params = New Structure();
-	
-	If TestPublicationAccessibilityResponse.Error <> Undefined Then
-		Params.Insert("Error", TestPublicationAccessibilityResponse.Error); 	
-		OpenForm(
-			"CommonForm.mol_ErrorViewer", 
-			Params, 
-			ThisForm
-		);  
-	ElsIf TestPublicationAccessibilityResponse.Result <> Undefined Then		
-	
-	EndIf; 
-	
-EndProcedure
-
-&AtClient
 Procedure RegisterNode(Command)
 	RegisterNodeAtServer();
 EndProcedure
@@ -512,6 +505,52 @@ Procedure OpenInternalServices(Command)
 		Undefined, 
 		ThisForm
 	);
+EndProcedure
+
+&AtClient
+Procedure mol_UseProxyForConnectionOnChange(Item)
+	OnAttributeChange(Item);
+EndProcedure
+
+&AtClient
+Procedure mol_ProxyProtocolOnChange(Item)
+	OnAttributeChange(Item);
+EndProcedure
+
+&AtClient
+Procedure mol_ProxyServerOnChange(Item)
+	OnAttributeChange(Item);
+EndProcedure
+
+&AtClient
+Procedure mol_ProxyPortOnChange(Item)
+	OnAttributeChange(Item);
+EndProcedure
+
+&AtClient
+Procedure mol_ProxyUserOnChange(Item)
+	OnAttributeChange(Item);
+EndProcedure
+
+&AtClient
+Procedure mol_ProxyPasswordOnChange(Item)
+	OnAttributeChange(Item);
+EndProcedure
+
+&AtClient
+Procedure TestPublicationAccessibilityStatusURLProcessing(Item, FormattedStringURL, StandardProcessing)
+	StandardProcessing = False;	
+	If TestPublicationAccessibilityResponse.Error <> Undefined Then
+		Params = New Structure();
+		Params.Insert("Error", TestPublicationAccessibilityResponse.Error); 	
+		OpenForm(
+			"CommonForm.mol_ErrorViewer", 
+			Params, 
+			ThisForm
+		);  
+	ElsIf TestPublicationAccessibilityResponse.Result <> Undefined Then		
+	
+	EndIf;
 EndProcedure
 
 

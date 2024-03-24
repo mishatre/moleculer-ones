@@ -2,7 +2,19 @@
 #Region Protected
 
 Function GetHTTPConnection(Protocol, Host, Port, Timeout) Export
-
+	
+	ProxyServer = Undefined;
+	If GetFunctionalOption("mol_UseProxyForConnection") Then
+		ProxyServer = New InternetProxy(False);	   
+		ProxyServer.Set(
+			Constants.mol_ProxyProtocol.Get(),
+			Constants.mol_ProxyServer.Get(),
+			Constants.mol_ProxyPort.Get(),
+			Constants.mol_ProxyUser.Get(),
+			Constants.mol_ProxyPassword.Get()
+		);	
+	EndIf;
+	
 	SecureConnection = Undefined;
 	If Protocol = "https:" Then
 		SecureConnection = New OpenSSLSecureConnection(); 
@@ -13,7 +25,7 @@ Function GetHTTPConnection(Protocol, Host, Port, Timeout) Export
 		Port,
 		, // User
 		, // Password
-		, // Proxy
+		ProxyServer,
 		Timeout,
 		SecureConnection
 	);

@@ -22,16 +22,17 @@ Function RegisterSidecarNode() Export
 		// Auth
 		GatewayAuthType = Constants.mol_NodeAuthorizationType.Get();
 		GatewayAuthInfo = NewGatewayAuthInfo(GatewayAuthType);
-		
-		UserUUID  = Constants.mol_NodeUser.Get();
-		FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
-			
-		If GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+				
+		If GatewayAuthType = Enums.mol_AuthorizationType.UsingAccessToken Then
+			UserUUID  = Constants.mol_NodeUser.Get();
+			FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
 			GatewayAuthInfo.AccessToken = mol_InternalHelpers.CreateOneTimeJWT(
 				Constants.mol_NodeSecretKey.Get(),
 				FoundUser.Name
 			);
-		ElsIf GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingPassword Then
+		ElsIf GatewayAuthType = Enums.mol_AuthorizationType.UsingPassword Then
+			UserUUID  = Constants.mol_NodeUser.Get();
+			FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
 			GatewayAuthInfo.Username = FoundUser.Name;
 			GatewayAuthInfo.Password = Constants.mol_NodeUserPassword.Get();
 		EndIf; 
@@ -109,16 +110,17 @@ Function PingLocalGateway() Export
 	
 	GatewayAuthType = Constants.mol_NodeAuthorizationType.Get();
 	GatewayAuthInfo = NewGatewayAuthInfo(GatewayAuthType);
-	
-	UserUUID  = Constants.mol_NodeUser.Get();
-	FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
-		
-	If GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+
+	If GatewayAuthType = Enums.mol_AuthorizationType.UsingAccessToken Then
+		UserUUID  = Constants.mol_NodeUser.Get();
+		FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
 		GatewayAuthInfo.AccessToken = mol_InternalHelpers.CreateOneTimeJWT(
 			Constants.mol_NodeSecretKey.Get(),
 			FoundUser.Name
 		);
-	ElsIf GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingPassword Then
+	ElsIf GatewayAuthType = Enums.mol_AuthorizationType.UsingPassword Then 
+		UserUUID  = Constants.mol_NodeUser.Get();
+		FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
 		GatewayAuthInfo.Username = FoundUser.Name;
 		GatewayAuthInfo.Password = Constants.mol_NodeUserPassword.Get();
 	EndIf; 
@@ -256,8 +258,8 @@ Function HandleIncomingServiceRequest(HTTPServiceRequest) Export
 	If Lower(Type) = Lower("Authorization") Then
 		Response = New Structure();
 		Response.Insert("success"  , True); 		
-		AuthType = Constants.mol_NodeAuthorizationType.Get();     
-		If AuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+		AuthType = Constants.mol_AuthorizationType.Get();     
+		If AuthType = Enums.mol_AuthorizationType.UsingAccessToken Then
 			UserUUID  = Constants.mol_NodeUser.Get();
 			FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
 			Response.Insert("accessToken", mol_InternalHelpers.CreateJWTAccessKey(
@@ -1029,11 +1031,13 @@ Function NewGatewayAuthInfo(AuthType)
 	
 	Result = New Structure(); 
 	
-	If AuthType = Enums.mol_NodeAuthorizationType.UsingPassword Then
+	If AuthType = Enums.mol_AuthorizationType.UsingPassword Then
 		Result.Insert("username");
 		Result.Insert("password");
-	ElsIf AuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
-		Result.Insert("accessToken");
+	ElsIf AuthType = Enums.mol_AuthorizationType.UsingAccessToken Then
+		Result.Insert("accessToken"); 
+	ElsIf AuthType = Enums.mol_AuthorizationType.NoAuth Then    
+		Return Result;
 	Else
 		Raise "UNKNOWN_AUTH_TYPE";
 	EndIf;

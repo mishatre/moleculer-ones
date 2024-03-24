@@ -21,7 +21,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">2efd5698-0519-48c9-8d4c-36f09b85e1c7</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_SchemaBuilder</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">a972f773-5561-491e-ae98-a185b42aaf83</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_NodeName</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">305b989d-fe67-4647-ac47-dd8df978fed1</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_NodeEndpoint</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_NodePort</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_NodeUseSSL</xr:Item>

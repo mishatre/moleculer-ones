@@ -6,7 +6,11 @@
 			<Synonym>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Mol administrator</v8:content>
+					<v8:content>Алминистратор Moleculer</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Moleculer administrator</v8:content>
 				</v8:item>
 			</Synonym>
 			<Comment/>
