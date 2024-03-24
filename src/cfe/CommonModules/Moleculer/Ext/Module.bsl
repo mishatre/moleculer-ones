@@ -25,7 +25,7 @@ Function Call(ActionName, Val Params = Undefined, Opts = Undefined) Export
 	Parameters.Insert("Method", "POST");
 	Parameters.Insert("Path"  , StrTemplate("/call/%1", ActionName));
 		
-	mol_Logger.Debug(
+	mol_Logger.mol_Debug(
 		"Call action",
 		New Structure("action", ActionName)
 	);
@@ -60,7 +60,7 @@ Function MCall(Def, Opts = Undefined) Export
 	Parameters.Insert("Method", "POST");
 	Parameters.Insert("Path"  , "/mcall");	
 
-	mol_Logger.Debug(
+	mol_Logger.mol_Debug(
 		"Call multiple actions"
 	);
 	
@@ -94,7 +94,7 @@ Function Emit(EventName, Data = Undefined, Val Opts = Undefined) Export
 	Parameters.Insert("Method", "POST");
 	Parameters.Insert("Path"  , StrTemplate("/emit/%1", EventName));
 	
-	mol_Logger.Debug(
+	mol_Logger.mol_Debug(
 		StrTemplate(
 			"Emit %1 event %2.",
 			EventName,         
@@ -132,7 +132,7 @@ Function Broadcast(EventName, Data = Undefined, Val Opts = Undefined) Export
 	Parameters.Insert("Method", "POST");
 	Parameters.Insert("Path"  , StrTemplate("/broadcast/%1", EventName));
 	
-	mol_Logger.Debug(
+	mol_Logger.mol_Debug(
 		StrTemplate(
 			"Broadcast %1 event %2.",
 			EventName,         
@@ -170,7 +170,7 @@ Function BroadcastLocal(EventName, Data = Undefined, Val Opts = Undefined) Expor
 	Parameters.Insert("Method", "POST");
 	Parameters.Insert("Path"  , StrTemplate("/broadcastlocal/%1", EventName));
 	
-	mol_Logger.Debug(
+	mol_Logger.mol_Debug(
 		StrTemplate(
 			"Broadcast %1 local event %2.",
 			EventName,         

@@ -1,0 +1,562 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://v8.1c.ru/8.3/xcf/logform" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:dcscor="http://v8.1c.ru/8.1/data-composition-system/core" xmlns:dcssch="http://v8.1c.ru/8.1/data-composition-system/schema" xmlns:dcsset="http://v8.1c.ru/8.1/data-composition-system/settings" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.16">
+	<AutoCommandBar name="FormCommandBar" id="-1">
+		<Autofill>false</Autofill>
+	</AutoCommandBar>
+	<Events>
+		<Event name="OnCreateAtServer">OnCreateAtServer</Event>
+	</Events>
+	<ChildItems>
+		<LabelField name="ServiceName" id="3">
+			<DataPath>ServiceName</DataPath>
+			<ContextMenu name="ServiceNameContextMenu" id="4"/>
+			<ExtendedTooltip name="ServiceNameExtendedTooltip" id="5"/>
+		</LabelField>
+		<LabelField name="ServiceVersion" id="6">
+			<DataPath>ServiceVersion</DataPath>
+			<ContextMenu name="ServiceVersionContextMenu" id="7"/>
+			<ExtendedTooltip name="ServiceVersionExtendedTooltip" id="8"/>
+		</LabelField>
+		<UsualGroup name="GroupServiceRegistration" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service registration</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Group service registration</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Group>Vertical</Group>
+			<ExtendedTooltip name="GroupServiceRegistrationExtendedTooltip" id="2"/>
+			<ChildItems>
+				<LabelField name="RegistrationStatus" id="9">
+					<DataPath>RegistrationStatus</DataPath>
+					<AutoMaxWidth>false</AutoMaxWidth>
+					<HorizontalStretch>false</HorizontalStretch>
+					<ContextMenu name="RegistrationStatusContextMenu" id="10"/>
+					<ExtendedTooltip name="RegistrationStatusExtendedTooltip" id="11"/>
+					<Events>
+						<Event name="URLProcessing">RegistrationStatusURLProcessing</Event>
+					</Events>
+				</LabelField>
+				<UsualGroup name="GroupRegistrationControls" id="95">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Group registration controls</v8:content>
+						</v8:item>
+					</Title>
+					<ToolTip>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Group registration controls</v8:content>
+						</v8:item>
+					</ToolTip>
+					<Group>AlwaysHorizontal</Group>
+					<Representation>None</Representation>
+					<ShowTitle>false</ShowTitle>
+					<ExtendedTooltip name="GroupRegistrationControlsExtendedTooltip" id="96"/>
+					<ChildItems>
+						<Button name="RegisterService" id="12">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.RegisterService</CommandName>
+							<ExtendedTooltip name="RegisterServiceExtendedTooltip" id="13"/>
+						</Button>
+						<Button name="UnregisterService" id="14">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.UnregisterService</CommandName>
+							<ExtendedTooltip name="UnregisterServiceExtendedTooltip" id="15"/>
+						</Button>
+						<Button name="CheckRegistration" id="16">
+							<Type>Hyperlink</Type>
+							<CommandName>Form.Command.CheckRegistration</CommandName>
+							<ExtendedTooltip name="CheckRegistrationExtendedTooltip" id="17"/>
+						</Button>
+					</ChildItems>
+				</UsualGroup>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupServiceMetadata" id="18">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Metadata</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Group service metadata</v8:content>
+				</v8:item>
+			</ToolTip>
+			<ExtendedTooltip name="GroupServiceMetadataExtendedTooltip" id="19"/>
+		</UsualGroup>
+		<UsualGroup name="GroupServiceActions" id="20">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Actions</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Group service actions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Behavior>Collapsible</Behavior>
+			<ControlRepresentation>Picture</ControlRepresentation>
+			<ExtendedTooltip name="GroupServiceActionsExtendedTooltip" id="21"/>
+			<ChildItems>
+				<Table name="ServiceActions" id="22">
+					<Representation>List</Representation>
+					<ReadOnly>true</ReadOnly>
+					<ChangeRowSet>false</ChangeRowSet>
+					<ChangeRowOrder>false</ChangeRowOrder>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>ServiceActions</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="ServiceActionsContextMenu" id="23"/>
+					<AutoCommandBar name="ServiceActionsCommandBar" id="24">
+						<Autofill>false</Autofill>
+					</AutoCommandBar>
+					<ExtendedTooltip name="ServiceActionsExtendedTooltip" id="25"/>
+					<SearchStringAddition name="ServiceActionsSearchString" id="26">
+						<AdditionSource>
+							<Item>ServiceActions</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ServiceActionsSearchStringContextMenu" id="27"/>
+						<ExtendedTooltip name="ServiceActionsSearchStringExtendedTooltip" id="28"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="ServiceActionsViewStatus" id="29">
+						<AdditionSource>
+							<Item>ServiceActions</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ServiceActionsViewStatusContextMenu" id="30"/>
+						<ExtendedTooltip name="ServiceActionsViewStatusExtendedTooltip" id="31"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="ServiceActionsSearchControl" id="32">
+						<AdditionSource>
+							<Item>ServiceActions</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="ServiceActionsSearchControlContextMenu" id="33"/>
+						<ExtendedTooltip name="ServiceActionsSearchControlExtendedTooltip" id="34"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<InputField name="ServiceActionsName" id="35">
+							<DataPath>ServiceActions.Name</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ServiceActionsNameContextMenu" id="36"/>
+							<ExtendedTooltip name="ServiceActionsNameExtendedTooltip" id="37"/>
+						</InputField>
+						<InputField name="ServiceActionsDescription" id="38">
+							<DataPath>ServiceActions.Description</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ServiceActionsDescriptionContextMenu" id="39"/>
+							<ExtendedTooltip name="ServiceActionsDescriptionExtendedTooltip" id="40"/>
+						</InputField>
+						<InputField name="ServiceActionsParams" id="41">
+							<DataPath>ServiceActions.Params</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ServiceActionsParamsContextMenu" id="42"/>
+							<ExtendedTooltip name="ServiceActionsParamsExtendedTooltip" id="43"/>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupServiceEvents" id="44">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Events</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Group service actions</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Behavior>Collapsible</Behavior>
+			<ControlRepresentation>Picture</ControlRepresentation>
+			<ExtendedTooltip name="GroupServiceEventsExtendedTooltip" id="45"/>
+			<ChildItems>
+				<Table name="ServiceEvents" id="68">
+					<Representation>List</Representation>
+					<ReadOnly>true</ReadOnly>
+					<ChangeRowSet>false</ChangeRowSet>
+					<ChangeRowOrder>false</ChangeRowOrder>
+					<AutoInsertNewRow>true</AutoInsertNewRow>
+					<EnableStartDrag>true</EnableStartDrag>
+					<EnableDrag>true</EnableDrag>
+					<DataPath>ServiceEvents</DataPath>
+					<SearchStringLocation>None</SearchStringLocation>
+					<ViewStatusLocation>None</ViewStatusLocation>
+					<SearchControlLocation>None</SearchControlLocation>
+					<RowFilter xsi:nil="true"/>
+					<ContextMenu name="ServiceEventsContextMenu" id="69"/>
+					<AutoCommandBar name="ServiceEventsCommandBar" id="70">
+						<Autofill>false</Autofill>
+					</AutoCommandBar>
+					<ExtendedTooltip name="ServiceEventsExtendedTooltip" id="71"/>
+					<SearchStringAddition name="ServiceEventsSearchString" id="72">
+						<AdditionSource>
+							<Item>ServiceEvents</Item>
+							<Type>SearchStringRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ServiceEventsSearchStringContextMenu" id="73"/>
+						<ExtendedTooltip name="ServiceEventsSearchStringExtendedTooltip" id="74"/>
+					</SearchStringAddition>
+					<ViewStatusAddition name="ServiceEventsViewStatus" id="75">
+						<AdditionSource>
+							<Item>ServiceEvents</Item>
+							<Type>ViewStatusRepresentation</Type>
+						</AdditionSource>
+						<ContextMenu name="ServiceEventsViewStatusContextMenu" id="76"/>
+						<ExtendedTooltip name="ServiceEventsViewStatusExtendedTooltip" id="77"/>
+					</ViewStatusAddition>
+					<SearchControlAddition name="ServiceEventsSearchControl" id="78">
+						<AdditionSource>
+							<Item>ServiceEvents</Item>
+							<Type>SearchControl</Type>
+						</AdditionSource>
+						<ContextMenu name="ServiceEventsSearchControlContextMenu" id="79"/>
+						<ExtendedTooltip name="ServiceEventsSearchControlExtendedTooltip" id="80"/>
+					</SearchControlAddition>
+					<ChildItems>
+						<InputField name="ServiceEventsName" id="81">
+							<DataPath>ServiceEvents.Name</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ServiceEventsNameContextMenu" id="82"/>
+							<ExtendedTooltip name="ServiceEventsNameExtendedTooltip" id="83"/>
+						</InputField>
+						<InputField name="ServiceEventsDescription" id="84">
+							<DataPath>ServiceEvents.Description</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ServiceEventsDescriptionContextMenu" id="85"/>
+							<ExtendedTooltip name="ServiceEventsDescriptionExtendedTooltip" id="86"/>
+						</InputField>
+						<InputField name="ServiceEventsParams" id="87">
+							<DataPath>ServiceEvents.Params</DataPath>
+							<EditMode>EnterOnInput</EditMode>
+							<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
+							<ContextMenu name="ServiceEventsParamsContextMenu" id="88"/>
+							<ExtendedTooltip name="ServiceEventsParamsExtendedTooltip" id="89"/>
+						</InputField>
+					</ChildItems>
+				</Table>
+			</ChildItems>
+		</UsualGroup>
+		<UsualGroup name="GroupServiceRawSchema" id="90">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Raw schema</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Group service raw schema</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Behavior>Collapsible</Behavior>
+			<Collapsed>true</Collapsed>
+			<ControlRepresentation>Picture</ControlRepresentation>
+			<ExtendedTooltip name="GroupServiceRawSchemaExtendedTooltip" id="91"/>
+			<ChildItems>
+				<TextDocumentField name="ServiceRawSchema" id="92">
+					<DataPath>ServiceRawSchema</DataPath>
+					<TitleLocation>None</TitleLocation>
+					<ContextMenu name="ServiceRawSchemaContextMenu" id="93"/>
+					<ExtendedTooltip name="ServiceRawSchemaExtendedTooltip" id="94"/>
+				</TextDocumentField>
+			</ChildItems>
+		</UsualGroup>
+	</ChildItems>
+	<Attributes>
+		<Attribute name="Object" id="1">
+			<Type>
+				<v8:Type>cfg:DataProcessorObject.mol_AdminPanel</v8:Type>
+			</Type>
+			<MainAttribute>true</MainAttribute>
+		</Attribute>
+		<Attribute name="ServiceName" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Name</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="ServiceVersion" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Version</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="RegistrationStatus" id="4">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Status</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8ui:FormattedString</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ServiceActions" id="5">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service actions</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Name" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Description" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Description</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Params" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Params</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="ServiceEvents" id="6">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service events</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>v8:ValueTable</v8:Type>
+			</Type>
+			<Columns>
+				<Column name="Name" id="1">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Name</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Description" id="2">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Description</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+				<Column name="Params" id="3">
+					<Title>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Params</v8:content>
+						</v8:item>
+					</Title>
+					<Type>
+						<v8:Type>xs:string</v8:Type>
+						<v8:StringQualifiers>
+							<v8:Length>0</v8:Length>
+							<v8:AllowedLength>Variable</v8:AllowedLength>
+						</v8:StringQualifiers>
+					</Type>
+				</Column>
+			</Columns>
+		</Attribute>
+		<Attribute name="ServiceSchema" id="7">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service schema</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+		<Attribute name="ServiceRegistered" id="8">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service registered</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:boolean</v8:Type>
+			</Type>
+		</Attribute>
+		<Attribute name="ServiceModule" id="9">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service module</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type>xs:string</v8:Type>
+				<v8:StringQualifiers>
+					<v8:Length>0</v8:Length>
+					<v8:AllowedLength>Variable</v8:AllowedLength>
+				</v8:StringQualifiers>
+			</Type>
+		</Attribute>
+		<Attribute name="RegistrationResponse" id="10">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Registration response</v8:content>
+				</v8:item>
+			</Title>
+			<Type/>
+		</Attribute>
+		<Attribute name="ServiceRawSchema" id="11">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Service raw schema</v8:content>
+				</v8:item>
+			</Title>
+			<Type>
+				<v8:Type xmlns:d5p1="http://v8.1c.ru/8.1/data/txtedt">d5p1:TextDocument</v8:Type>
+			</Type>
+		</Attribute>
+	</Attributes>
+	<Commands>
+		<Command name="RegisterService" id="1">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Register service</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Register service</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>RegisterService</Action>
+		</Command>
+		<Command name="UnregisterService" id="2">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Unregister service</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Unregister service</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>UnregisterService</Action>
+		</Command>
+		<Command name="CheckRegistration" id="3">
+			<Title>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Check registration</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Check registration</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>CheckRegistration</Action>
+		</Command>
+	</Commands>
+</Form>

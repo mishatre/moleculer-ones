@@ -77,7 +77,8 @@ EndProcedure
 
 // Example action
 Function ExampleAction(Context) Export
-
+	
+	mol_Logger.mol_Warn("ExampleAction");
 	Return "Hello. I am example action";
 	
 EndFunction

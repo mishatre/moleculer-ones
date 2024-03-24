@@ -14,25 +14,31 @@
 			<IncludeInCommandInterface>true</IncludeInCommandInterface>
 			<UseOneCommand>false</UseOneCommand>
 			<Explanation/>
-			<Picture/>
+			<Picture>
+				<xr:Ref>CommonPicture.mol_Logo</xr:Ref>
+				<xr:LoadTransparent>true</xr:LoadTransparent>
+			</Picture>
 			<Content>
-				<xr:Item xsi:type="xr:MDObjectRef">6a836518-e8d4-4067-a461-d35c27c78a91</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">5b4d2c6b-a3aa-44bc-8524-61127a074bf5</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_Errors</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_InternalReuse</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_Internal</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.Moleculer</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_Logger</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_InternalHelpersReuse</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_Endpoint</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_Port</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_UseSSL</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_SecretKey</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_AccessKey</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_SidecarEndpoint</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_SidecarPort</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_SidecarUseSSL</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_SidecarSecretKey</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_SidecarAccessKey</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_InternalHelpers</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">8d807ba5-4957-4f98-97ed-a91b3f220ce4</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.mol_Logo</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.mol_AdminPanel</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.mol_Registry</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects>
+			<Subsystem>Sidecar</Subsystem>
 			<Subsystem>ExternalNode</Subsystem>
 			<Subsystem>ExampleService</Subsystem>
 			<Subsystem>Interface</Subsystem>

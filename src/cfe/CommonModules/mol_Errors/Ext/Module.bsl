@@ -135,11 +135,7 @@ Function NewError(Type, Code = 500, Name = "MoleculerError", Message = "", Data 
 	Result.Insert("code"   , Code     );
 	Result.Insert("type"   , Type     );
 	Result.Insert("data"   , Data     );
-	Result.Insert("stack"  , Undefined);
-	
-	If ErrorInfo <> Undefined Then
-		Result.Stack = GetErrorStack(ErrorInfo);
-	EndIf;
+	Result.Insert("stack"  , GetErrorStack(ErrorInfo, Message));
 	
 	Return Result;
 
@@ -161,8 +157,17 @@ Function GetErrorType(ErrorInfo)
 	
 EndFunction 
 
-Function GetErrorStack(ErrorInfo)
-
+Function GetErrorStack(ErrorInfo = Undefined, CustomMessage = "")
+	
+	SkipStackItems = 0;
+	If ErrorInfo = Undefined Then
+		ErrorInfo = CreateErrorInfo();
+		If ErrorInfo = Undefined Then
+			Return Undefined;
+		EndIf;
+		SkipStackItems = 5; // Remove first 5 rows as meaningless
+	EndIf;
+	                           
 	DetailDescription = ErrorProcessing.DetailErrorDescription(ErrorInfo);
 	TextParts = StrSplit(DetailDescription, Chars.LF);
 	StackParts = New Array();
@@ -174,7 +179,29 @@ Function GetErrorStack(ErrorInfo)
 		StackParts.Add(Row);	
 	EndDo;
 	
+	If SkipStackItems > 0 Then
+		For Index = 0 To SkipStackItems - 1 Do 
+			StackParts.Delete(0);	
+		EndDo; 
+	EndIf;
+	
+	If CustomMessage <> "" Then
+		StackParts.Insert(0, CustomMessage);
+	EndIf;
+	
 	Return TrimAll(StrConcat(StackParts, Chars.LF));
+	
+EndFunction 
+
+Function CreateErrorInfo()
+	
+	Try
+		A = 1/0;
+	Except
+		Return ErrorInfo();
+	EndTry;
+	
+	Return Undefined;
 	
 EndFunction
 

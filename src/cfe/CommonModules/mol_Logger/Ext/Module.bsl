@@ -1,7 +1,7 @@
 ﻿
 #Region Public
 
-Function Debug(Message, Data = Undefined) Export
+Function mol_Debug(Message, Data = Undefined) Export
 	
 	#If Not MobileAppServer Then
 	WriteLogEvent(
@@ -15,7 +15,7 @@ Function Debug(Message, Data = Undefined) Export
 	
 EndFunction 
 
-Function Warn(Message, Data = Undefined) Export
+Function mol_Warn(Message, Data = Undefined) Export
 	
 	#If Not MobileAppServer Then
 	WriteLogEvent(

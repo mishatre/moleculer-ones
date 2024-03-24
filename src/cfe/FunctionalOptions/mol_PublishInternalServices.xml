@@ -1,13 +1,18 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.16">
-	<Language uuid="ba0a4e20-40d0-4d64-a35c-a14c8cfb2e1a">
-		<InternalInfo/>
+	<FunctionalOption uuid="b7ba613d-c548-48f6-927b-98c8576eb2e6">
 		<Properties>
-			<ObjectBelonging>Adopted</ObjectBelonging>
-			<Name>English</Name>
+			<Name>mol_PublishInternalServices</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Publish internal services</v8:content>
+				</v8:item>
+			</Synonym>
 			<Comment/>
-			<ExtendedConfigurationObject>d5c58a12-000a-4b7f-a3e1-be473f4f3ef6</ExtendedConfigurationObject>
-			<LanguageCode>en</LanguageCode>
+			<Location>Constant.mol_PublishServices</Location>
+			<PrivilegedGetMode>true</PrivilegedGetMode>
+			<Content/>
 		</Properties>
-	</Language>
+	</FunctionalOption>
 </MetaDataObject>

@@ -1,22 +1,84 @@
 ﻿
 #Region Public
 
-Function RegisterSidecarNode() Export
+#Region SidecarCalls
 
-	Params = NewNodeRegistrationInfo();
-	Params.Connection.Endpoint    = Constants.mol_NodeEndpoint.Get();
-	Params.Connection.Port        = Constants.mol_NodePort    .Get();
-	Params.Connection.UseSSL      = Constants.mol_NodeUseSSL  .Get();  
-	Params.Connection.AccessToken = mol_InternalHelpers.CreateOneTimeJWT(
-		Constants.mol_NodeSecretKey.Get()
-	);
+Function RegisterSidecarNode() Export
 	
-	NodePublicationName = Constants.mol_NodePublicationName.Get();
+	NodeInfo = NewNodeInfo();
+	NodeInfo.NodeID = Constants.mol_NodeId.Get();
 	
-	Params.Name    = Constants.mol_NodeName.Get(); 
-	Params.Gateway = mol_InternalHelpers.GetGatewayPath(NodePublicationName);
+	If GetFunctionalOption("mol_PublishInternalServices") Then
+		ServicePublication = NewServicePublication();
+		ServicePublication.PublishServices = True;
+		ServicePublication.Namespace       = Constants.mol_NodeNamespace.Get();
+		
+		ServicePublicationGateway = NewGatewayInfo();
+		ServicePublicationGateway.Endpoint = Constants.mol_NodeEndpoint.Get();
+		ServicePublicationGateway.Port     = Constants.mol_NodePort.Get();
+		ServicePublicationGateway.UseSSL   = Constants.mol_NodeUseSSL.Get(); 
+		ServicePublicationGateway.Path     = Constants.mol_NodePublicationPath.Get();
+		
+		// Auth
+		GatewayAuthType = Constants.mol_NodeAuthorizationType.Get();
+		GatewayAuthInfo = NewGatewayAuthInfo(GatewayAuthType);
+		
+		UserUUID  = Constants.mol_NodeUser.Get();
+		FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
+			
+		If GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+			GatewayAuthInfo.AccessToken = mol_InternalHelpers.CreateOneTimeJWT(
+				Constants.mol_NodeSecretKey.Get(),
+				FoundUser.Name
+			);
+		ElsIf GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingPassword Then
+			GatewayAuthInfo.Username = FoundUser.Name;
+			GatewayAuthInfo.Password = Constants.mol_NodeUserPassword.Get();
+		EndIf; 
+		
+		ServicePublicationGateway.Auth = GatewayAuthInfo;
+		
+		ServicePublication.Gateway  = ServicePublicationGateway;	
+		NodeInfo.ServicePublication = ServicePublication;
+	EndIf;
 	
-	Response = Moleculer.Call("$sidecar.registerSidecarNode", Params);
+	Params = New Structure();
+	Params.Insert("node", NodeInfo);
+	
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.registerNode", Params, Opts);
+	
+	Return Response;
+	
+EndFunction
+
+Function UnregisterSidecarNode() Export
+	
+	NodeID = Constants.mol_NodeId.Get();
+	If Not ValueIsFilled(NodeID) Then
+		Raise "EMPTY_NODE_ID";
+	EndIf;
+	
+	Params = New Structure();
+	Params.Insert("nodeID", NodeID);
+	
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.removeNode", Params, Opts);
+	
+	Return Response;
+	
+EndFunction
+
+Function GetSidecarServiceInfo() Export
+
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.info", Undefined, Opts);
 	If IsError(Response) Then
 			
 	EndIf; 
@@ -24,6 +86,151 @@ Function RegisterSidecarNode() Export
 	Return Response;
 	
 EndFunction
+
+Function PingSidecarService() Export
+
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.ping", Undefined, Opts);
+	
+	Return Response;
+	
+EndFunction
+
+Function PingLocalGateway() Export
+	
+	GatewayInfo = NewGatewayInfo();
+	
+	GatewayInfo.Endpoint    = Constants.mol_NodeEndpoint.Get();
+	GatewayInfo.Port        = Constants.mol_NodePort.Get();
+	GatewayInfo.UseSSL      = Constants.mol_NodeUseSSL.Get();    
+	GatewayInfo.Path        = Constants.mol_NodePublicationPath.Get();
+	
+	GatewayAuthType = Constants.mol_NodeAuthorizationType.Get();
+	GatewayAuthInfo = NewGatewayAuthInfo(GatewayAuthType);
+	
+	UserUUID  = Constants.mol_NodeUser.Get();
+	FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
+		
+	If GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+		GatewayAuthInfo.AccessToken = mol_InternalHelpers.CreateOneTimeJWT(
+			Constants.mol_NodeSecretKey.Get(),
+			FoundUser.Name
+		);
+	ElsIf GatewayAuthType = Enums.mol_NodeAuthorizationType.UsingPassword Then
+		GatewayAuthInfo.Username = FoundUser.Name;
+		GatewayAuthInfo.Password = Constants.mol_NodeUserPassword.Get();
+	EndIf; 
+	
+	GatewayInfo.Auth = GatewayAuthInfo;
+	
+	Params = New Structure();
+	Params.Insert("gateway", GatewayInfo);
+	
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.pingGateway", Params, Opts);
+	
+	Return Response;
+	
+EndFunction
+
+Function NodeRegistered() Export
+	
+	NodeID = Constants.mol_NodeId.Get();
+	If Not ValueIsFilled(NodeID) Then
+		Return NewResponse(, False);
+	EndIf;
+	
+	Params = New Structure();
+	Params.Insert("nodeID", NodeID);
+	
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.nodeRegistered", Params, Opts);
+	
+	Return Response;
+	
+EndFunction
+
+Function GetPublishedNodeServices() Export
+
+	NodeID = Constants.mol_NodeId.Get();
+	If Not ValueIsFilled(NodeID) Then
+		Return New Array();
+	EndIf;
+	
+	Params = New Structure();
+	Params.Insert("nodeID", NodeID);
+	
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.publishedServices", Params, Opts);
+	
+	Return Response;
+	
+EndFunction
+
+Function RegisterNodeService(ServiceModule) Export
+	
+	If Not NodeRegistered().Result Then
+		Return NewResponse(
+			mol_Errors.ClientError("NODE_UNREGISTERED", 400, "Cannot register service for unregistered node")
+		);
+	EndIf;                               
+	
+	ServiceSchema = GetServiceSchema(ServiceModule);
+	If ServiceSchema = Undefined Then
+		Return NewResponse(
+			mol_Errors.ClientError("SERVICE_SCHEMA_ERROR", 400, "Could not create service schema")
+		);	                                                                                      
+	EndIf;
+	
+	NodeID = Constants.mol_NodeId.Get(); 
+	
+	Params = New Structure();
+	Params.Insert("nodeID", NodeID);
+	Params.Insert("schema", ServiceSchema);
+	
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.registerNodeService", Params, Opts);
+	
+	Return Response;	
+	
+	
+EndFunction
+
+Function RevokeNodeServicePubliction(ServiceName, ServiceVersion) Export
+	
+	If Not NodeRegistered().Result Then
+		Return NewResponse(
+			mol_Errors.ClientError("NODE_UNREGISTERED", 400, "Cannot unregister service for unregistered node")
+		);
+	EndIf;
+	
+	NodeID = Constants.mol_NodeId.Get();
+	
+	Params = New Structure();
+	Params.Insert("nodeID"        , NodeID);
+	Params.Insert("serviceName"   , ServiceName);
+	Params.Insert("serviceVersion", ServiceVersion);
+	
+	Opts = New Structure();
+	Opts.Insert("InvalidateCache", True);
+	
+	Response = Moleculer.Call("$sidecar.revokeNodeServicePublication", Params, Opts);
+	
+	Return Response;
+	
+EndFunction 
+
+#EndRegion
 
 #EndRegion
 
@@ -42,13 +249,35 @@ Function HandleIncomingServiceRequest(HTTPServiceRequest) Export
 	If IsError(Payload) Then
 		Return NewServiceResponse(Payload);
 	EndIf;
-	Payload = Payload.Result;
-
-	If Lower(Type) = Lower("Request") Then
+	Payload = Payload.Result; 
+	
+	mol_Logger.mol_Debug("Moleculer.IncomingRequest", Type);
+	
+	If Lower(Type) = Lower("Authorization") Then
+		Response = New Structure();
+		Response.Insert("success"  , True); 		
+		AuthType = Constants.mol_NodeAuthorizationType.Get();     
+		If AuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+			UserUUID  = Constants.mol_NodeUser.Get();
+			FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
+			Response.Insert("accessToken", mol_InternalHelpers.CreateJWTAccessKey(
+				Constants.mol_NodeSecretKey.Get(),
+				FoundUser.Name
+			));                                                            
+		EndIf;
+		Return NewServiceResponse(
+			NewResponse(, Response)
+		);      
+	ElsIf Lower(Type) = Lower("Ping") Then
+		Return NewServiceResponse(
+			NewResponse(, "pong")
+		);
+	ElsIf Lower(Type) = Lower("Lifecycle") Then
+		Return RequestLifecycleHandler(Payload);	
+	ElsIf Lower(Type) = Lower("Request") Then
 		Return RequestHandler(Payload);	
-	ElsIf Lower(Type) = Lower("Event") Then
-	ElsIf Lower(Type) = Lower("Discover") Then
-		Return SendLocalServicesInfo();
+	ElsIf Lower(Type) = Lower("Event") Then  
+		Return EventRequestHandler(Payload);
 	EndIf; 
 	
 	Data = New Structure();
@@ -81,18 +310,24 @@ Function ExecuteSidecarAction(ActionParameters, Payload) Export
 	If Payload.Options.Property("ConnectionInfo") Then
 		RequestParameters.ConnectionInfo = Payload.Options.ConnectionInfo;
 		Payload.Options.Delete("ConnectionInfo");
+	EndIf; 
+	
+	If Payload.Options.Property("InvalidateCache") Then
+		RequestParameters.InvalidateCache = Payload.Options.InvalidateCache;
+		Payload.Options.Delete("InvalidateCache");
 	EndIf;
+	
 	If Payload.Options.Property("Timeout") Then
 		RequestParameters.Timeout = Payload.Options.Timeout; 
 		Payload.Options.Delete("Timeout");
 	EndIf;
 	
-	Payload = mol_InternalHelpers.ToString(Payload);
-	
+	Payload = mol_InternalHelpers.ToString(Payload);	
 	Response = ExecuteSidecarRequest(RequestParameters, Payload);
 	
 	ThrowErrors = False;
 	If IsError(Response) And ThrowErrors = True Then
+		// Log error
 		Raise Response.Error.Message;	
 	EndIf;
 	
@@ -163,7 +398,7 @@ Function ExecuteSidecarRequest(Options, Payload)
 	If Options.Connectioninfo <> Undefined Then
 		ConnectionInfo = Options.ConnectionInfo;	
 	Else
-		ConnectionInfo = GetSidecarConnectionSettings();
+		ConnectionInfo = GetSidecarConnectionSettings(Options.InvalidateCache);
 	EndIf;
 	
 	If Options.Headers = Undefined Then
@@ -171,8 +406,8 @@ Function ExecuteSidecarRequest(Options, Payload)
 	EndIf; 
 	
 	If Options.Method = "POST" Or Options.Method = "PUT" Or Options.Method = "DELETE" Then
-		PayloadSize = mol_InternalHelpers.GetPayloadSize(Payload);
-		Options.Headers.Insert("content-length", Format(PayloadSize, "NG="));	
+		//PayloadSize = mol_InternalHelpers.GetPayloadSize(Payload);
+		//Options.Headers.Insert("content-length", Format(PayloadSize, "NG="));	
 	EndIf;
 	
 	Sha256Sum = mol_InternalHelpers.ToSha256(Payload);
@@ -232,21 +467,20 @@ Function MakeHTTPRequest(Options, Body)
 	HTTPRequest = New HTTPRequest(Options.Path, Options.Headers); 	
 	mol_InternalHelpers.SetRequestResponseBody(HTTPRequest, Body);
 	
-	Result = Undefined;
-	Error  = Undefined; 
-	Meta   = New Structure();
+	Response = NewResponse();
 	Try     
 		Time1 = CurrentUniversalDateInMilliseconds();
-		Result = HTTPConnection.CallHTTPMethod(Options.Method, HTTPRequest);
+		Response.Result = HTTPConnection.CallHTTPMethod(Options.Method, HTTPRequest);
 		Time2 = CurrentUniversalDateInMilliseconds();		
 	Except
 		Time2 = CurrentUniversalDateInMilliseconds(); 
 		ErrorInfo = ErrorInfo();
-		Error = mol_Errors.FromErrorInfo(ErrorInfo);
+		Response.Error = mol_Errors.FromErrorInfo(ErrorInfo);
 	EndTry;      
 	
-    Meta.Insert("elapsedTime", Time2 - Time1);
-	Return NewResponse(Error, Result, Meta);
+	Response.Meta = New Structure();
+    Response.Meta.Insert("elapsedTime", Time2 - Time1);
+	Return Response;
 	
 EndFunction
 
@@ -259,6 +493,7 @@ Function NewRequestParameters()
 	Result.Insert("Query"     , Undefined);  
 	
 	Result.Insert("ConnectionInfo", Undefined);
+	Result.Insert("InvalidateCache", False);
 	Result.Insert("Timeout"       , 60000);
 	
 	Return Result;
@@ -335,11 +570,11 @@ Function GetSidecarConnectionSettings(ForceUpdate = False) Export
 	
 	Result = NewConnectionInfo();
 	
-	Result.Endpoint  = Constants.mol_Endpoint .Get();
-	Result.Port      = Constants.mol_Port     .Get();
-	Result.UseSSL    = Constants.mol_UseSSL   .Get();
-	Result.SecretKey = Constants.mol_SecretKey.Get();
-	Result.AccessKey = Constants.mol_AccessKey.Get();
+	Result.Endpoint  = Constants.mol_SidecarEndpoint .Get();
+	Result.Port      = Constants.mol_SidecarPort     .Get();
+	Result.UseSSL    = Constants.mol_SidecarUseSSL   .Get();
+	Result.SecretKey = Constants.mol_SidecarSecretKey.Get();
+	Result.AccessKey = Constants.mol_SidecarAccessKey.Get();
 	
 	Return Result;
 	
@@ -351,20 +586,24 @@ EndFunction
 
 Function ExtractRequestPayload(HTTPServiceRequest)
 	
-	Error  = Undefined;
-	Result = Undefined;
-	
 	BodyString = HTTPServiceRequest.GetBodyAsString();
-
 	Try
-		Result = mol_InternalHelpers.BasicFromString(BodyString);	
+		Return NewResponse(,mol_InternalHelpers.BasicFromString(BodyString));	
 	Except
 		Data = New Structure();
 		Data.Insert("body", BodyString);
-		Error = mol_Errors.RequestRejected("Malformed sidecar request body", Data);	
+		Return NewResponse(mol_Errors.RequestRejected("Malformed sidecar request body", Data));	
 	EndTry; 
 	
-	Return NewResponse(Error, Result);
+EndFunction 
+
+Function RequestLifecycleHandler(Payload)
+
+	Endpoint = GetLocalEventEndpoint(Payload.Event);
+	
+	Response = CallEndpointHandler(Endpoint.Event.Handler, Undefined, True);
+	
+	Return NewServiceResponse(Response);
 	
 EndFunction
 
@@ -399,18 +638,31 @@ Function RequestHandler(Payload)
 	
 EndFunction
 
-Function EventHandler(Payload)
+Function EventRequestHandler(Payload)
+
+	Endpoint = GetLocalEventEndpoint(Payload.Event);
+	
+	// Recreate caller context
+	Context = CreateNewContext();
+	
+	SetContextEndpoint(Context, Endpoint);
+	Context.Id        = Payload.Id;
+	SetContextParams(Context, Payload.Params);
+	Context.ParentID  = Payload.ParentID;
+	Context.RequestID = Payload.RequestID;
+	Context.Caller    = Payload.Caller;
+	Context.Meta      = GetPropertyOr(Payload, "Meta", New Map());
+	Context.Level     = Payload.Level;
+	//Context.Tracing   = Payload.Tracing;
+	Context.NodeID    = Payload.NodeID;
+		
+	Response = CallEndpointHandler(Endpoint.Event.Handler, Context, False);
+	
+	Return NewServiceResponse(Response);
 	
 EndFunction
 
-Function SendLocalServicesInfo()        
-	
-	Services = GetServiceSchemas();
-	
-	Result = New Structure();
-	Result.Insert("services", Services);
-	
-	Return NewServiceResponse(NewResponse(Undefined, Result));
+Function EventHandler(Payload)
 	
 EndFunction
 
@@ -457,12 +709,23 @@ Function GetLocalActionEndpoint(Action)
 		
 EndFunction  
 
-Function CallEndpointHandler(Handler, Context, Lifecycle = False)
+Function GetLocalEventEndpoint(Event)
+
+	Result = New Structure();
+	Result.Insert("Event", Event);
+	
+	Return Result;
+		
+EndFunction  
+
+Function CallEndpointHandler(Handler, Context = Undefined, Lifecycle = False)
 	
 	HandlerParts = StrSplit(Handler, ".");
 
-	Parameters = New Array();
-	Parameters.Add(Context);                              
+	Parameters = New Array(); 
+	If Context <> Undefined Then
+		Parameters.Add(Context); 
+	EndIf;
 	
 	Result = Undefined;
 	Error  = Undefined;
@@ -473,7 +736,7 @@ Function CallEndpointHandler(Handler, Context, Lifecycle = False)
 		Else
 			CallResult = ExecuteModuleFunction(HandlerParts[0], HandlerParts[1], Parameters);
 			If IsError(CallResult) Then
-				Error = Result.Error;
+				Error = CallResult.Error;
 			ElsIf HasResult(CallResult) Then
 				Result = CallResult.Result;
 			Else
@@ -570,17 +833,18 @@ Function GetServiceModuleNames(ServiceModulePrefix = "Service", ForceUpdate = Fa
 	
 	CommonModules = Metadata.CommonModules;
 	For Each ModuleMetadata In CommonModules Do
-		If StrStartsWith(ModuleMetadata.Name, ServiceModulePrefix) Then
-			If Not ModuleMetadata.Server Then  
-				Message = StrTemplate(
-					"Service module name ""%1"" does not have ""server"" flag and was skipped",
-					ModuleMetadata.Name	
-				);
-				mol_Logger.Warn(Message);
-				Continue;
-			EndIf;
-			Result.Add(ModuleMetadata.Name);		
+		If Not StrStartsWith(ModuleMetadata.Name, ServiceModulePrefix) Then
+			Continue;
 		EndIf;
+		If Not ModuleMetadata.Server Then  
+			Message = StrTemplate(
+				"Service module name ""%1"" does not have ""server"" flag and was skipped",
+				ModuleMetadata.Name	
+			);
+			mol_Logger.mol_Warn(Message);
+			Continue;
+		EndIf;
+		Result.Add(ModuleMetadata.Name);		
 	EndDo;
 	
 	Return Result;
@@ -594,17 +858,17 @@ Function GetServiceSchemas(ForceUpdate = False) Export
 	EndIf;
 	
 	Result = New Array(); 
-	NodePrefix = Constants.mol_NodeName.Get();
+	NodeNamespace = Constants.mol_NodeNamespace.Get();
 	
 	ModuleNames = GetServiceModuleNames();
 	For Each ModuleName In ModuleNames Do
 		Response = CompileServiceSchema(ModuleName);
 		If IsError(Response) Then
-			mol_Logger.Warn(Response.Error.Message, Response.Error.Data);
+			mol_Logger.mol_Warn(Response.Error.Message, Response.Error.Data);
 		    Continue;
 		EndIf;   
 		Schema = Response.Result;
-		Schema.Name = NodePrefix + "." + Schema.Name; 
+		Schema.Name = NodeNamespace + "." + Schema.Name; 
 		
 		Result.Add(Schema);
 	EndDo;                          
@@ -613,8 +877,29 @@ Function GetServiceSchemas(ForceUpdate = False) Export
 	
 EndFunction
 
+Function GetServiceSchema(ModuleName) Export
 
-Function CompileServiceSchema(ModuleName) 
+	//If ForceUpdate = False Then
+	//	Return mol_InternalReuse.GetServiceSchemas();
+	//EndIf;
+	
+	NodeNamespace = Constants.mol_NodeNamespace.Get();
+	Response = CompileServiceSchema(ModuleName);
+	If IsError(Response) Then
+		mol_Logger.mol_Warn(Response.Error.Message, Response.Error.Data);
+	    Return Undefined;
+	EndIf;   
+	Schema = Response.Result;
+	Schema.Name = NodeNamespace + "." + Schema.Name; 
+	
+	Return Schema;
+	
+EndFunction
+
+
+
+
+Function CompileServiceSchema(ModuleName) Export 
 	
 	BuilderModule = CommonModule("mol_SchemaBuilder");
 	
@@ -717,6 +1002,91 @@ Function NewSidecarNodeConnectionInfo()
 	
 	Return Result;
 
+	Return Result;
+	
+EndFunction
+
+#EndRegion
+
+#Region Gateway
+
+Function NewGatewayInfo()
+	
+	Result = New Structure();
+	Result.Insert("endpoint");
+	Result.Insert("port");
+	Result.Insert("path");
+	Result.Insert("useSSL");
+	
+	// See: NewGatewayAuthInfo()
+	Result.Insert("auth");
+	
+	Return Result;
+		
+EndFunction  
+
+Function NewGatewayAuthInfo(AuthType)
+	
+	Result = New Structure(); 
+	
+	If AuthType = Enums.mol_NodeAuthorizationType.UsingPassword Then
+		Result.Insert("username");
+		Result.Insert("password");
+	ElsIf AuthType = Enums.mol_NodeAuthorizationType.UsingAccessToken Then
+		Result.Insert("accessToken");
+	Else
+		Raise "UNKNOWN_AUTH_TYPE";
+	EndIf;
+	
+	Return Result;
+	
+EndFunction
+
+#EndRegion
+
+#Region Node 
+
+Function GetNodeType()
+	Return "MoleculerOneS (extension)";	
+EndFunction  
+
+Function GetNodeVersion()
+	Return "0.2.0";	
+EndFunction
+
+Function NewNodeInfo()
+
+	Result = New Structure();
+	Result.Insert("nodeID"            , Undefined        ); 
+	Result.Insert("nodeType"          , GetNodeType()    ); 
+	Result.Insert("version"           , GetNodeVersion() ); 
+	Result.Insert("servicePublication", Undefined        ); 
+	Result.Insert("platform"          , NewPlatformInfo()); 
+	
+	Return Result;
+	
+EndFunction 
+
+Function NewServicePublication()
+	
+	Result = New Structure();
+	Result.Insert("publishServices");
+	Result.Insert("namespace");
+	Result.Insert("gateway");
+	
+	Return Result;
+	
+EndFunction
+
+Function NewPlatformInfo()
+	
+	Result = New Structure();
+	Result.Insert("name"   , "1С:Предприятия 8");
+	Result.Insert("version", "8.3.23.0000"     );
+	Result.Insert("os");
+	Result.Insert("cpu");
+	Result.Insert("memory");  
+	
 	Return Result;
 	
 EndFunction
