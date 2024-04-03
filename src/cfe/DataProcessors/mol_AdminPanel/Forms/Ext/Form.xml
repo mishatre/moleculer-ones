@@ -67,7 +67,6 @@
 							<ExtendedTooltip name="mol_NodeIdExtendedTooltip" id="142"/>
 							<Events>
 								<Event name="OnChange">mol_NodeIdOnChange</Event>
-								<Event name="EditTextChange">mol_NodeIdEditTextChange</Event>
 							</Events>
 						</InputField>
 					</ChildItems>
@@ -133,7 +132,7 @@
 								<Button name="CheckRegistration" id="145">
 									<Type>Hyperlink</Type>
 									<Visible>false</Visible>
-									<CommandName>Form.Command.CheckRegistration</CommandName>
+									<CommandName>Form.Command.UpdateNodeStatus</CommandName>
 									<ExtendedTooltip name="CheckRegistrationExtendedTooltip" id="146"/>
 								</Button>
 							</ChildItems>
@@ -293,6 +292,10 @@
 													<EditFormat>
 														<v8:item>
 															<v8:lang>ru</v8:lang>
+															<v8:content>NZ=; NG=</v8:content>
+														</v8:item>
+														<v8:item>
+															<v8:lang>en</v8:lang>
 															<v8:content>NZ=; NG=</v8:content>
 														</v8:item>
 													</EditFormat>
@@ -516,6 +519,10 @@
 																			<v8:lang>ru</v8:lang>
 																			<v8:content>NZ=; NG=</v8:content>
 																		</v8:item>
+																		<v8:item>
+																			<v8:lang>en</v8:lang>
+																			<v8:content>NZ=; NG=</v8:content>
+																		</v8:item>
 																	</EditFormat>
 																	<MinValue xsi:type="xs:decimal">1</MinValue>
 																	<MaxValue xsi:type="xs:decimal">65536</MaxValue>
@@ -606,7 +613,7 @@
 													<ContextMenu name="SidecarTestConnectionStatusContextMenu" id="50"/>
 													<ExtendedTooltip name="SidecarTestConnectionStatusExtendedTooltip" id="51"/>
 													<Events>
-														<Event name="Click">SidecarTestConnectionStatusClick</Event>
+														<Event name="URLProcessing">SidecarTestConnectionStatusURLProcessing</Event>
 													</Events>
 												</LabelField>
 											</ChildItems>
@@ -875,6 +882,10 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 																	<v8:lang>ru</v8:lang>
 																	<v8:content>NZ=; NG=</v8:content>
 																</v8:item>
+																<v8:item>
+																	<v8:lang>en</v8:lang>
+																	<v8:content>NZ=; NG=</v8:content>
+																</v8:item>
 															</EditFormat>
 															<ContextMenu name="ConstantsSetmol_NodePortContextMenu" id="67"/>
 															<ExtendedTooltip name="ConstantsSetmol_NodePortExtendedTooltip" id="68"/>
@@ -949,9 +960,8 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 													<ContextMenu name="Constantmol_NodeUserContextMenu" id="83"/>
 													<ExtendedTooltip name="Constantmol_NodeUserExtendedTooltip" id="84"/>
 													<Events>
-														<Event name="OnChange">mol_NodeUserOnChange</Event>
+														<Event name="OnChange">Constantmol_NodeUserOnChange</Event>
 														<Event name="StartChoice">Constantmol_NodeUserStartChoice</Event>
-														<Event name="StartListChoice">Constantmol_NodeUserStartListChoice</Event>
 														<Event name="ChoiceProcessing">Constantmol_NodeUserChoiceProcessing</Event>
 													</Events>
 												</InputField>
@@ -1450,7 +1460,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			</Title>
 			<Action>UnregisterNode</Action>
 		</Command>
-		<Command name="CheckRegistration" id="7">
+		<Command name="UpdateNodeStatus" id="7">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
@@ -1458,7 +1468,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Check registration</v8:content>
+					<v8:content>Update node status</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
@@ -1466,8 +1476,12 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Check registration</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Update node status</v8:content>
+				</v8:item>
 			</ToolTip>
-			<Action>CheckNodeRegistration</Action>
+			<Action>UpdateNodeStatus</Action>
 		</Command>
 	</Commands>
 </Form>

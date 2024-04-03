@@ -165,7 +165,7 @@ Function GetErrorStack(ErrorInfo = Undefined, CustomMessage = "")
 		If ErrorInfo = Undefined Then
 			Return Undefined;
 		EndIf;
-		SkipStackItems = 5; // Remove first 5 rows as meaningless
+		SkipStackItems = 5; // Remove first 5 rows as they are meaningless
 	EndIf;
 	                           
 	DetailDescription = ErrorProcessing.DetailErrorDescription(ErrorInfo);

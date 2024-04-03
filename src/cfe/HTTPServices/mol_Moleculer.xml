@@ -25,7 +25,7 @@
 						</v8:item>
 					</Synonym>
 					<Comment/>
-					<Template>/{Type}</Template>
+					<Template>/v1/message</Template>
 				</Properties>
 				<ChildObjects>
 					<Method uuid="296bd0c5-5e29-4445-aecc-acf1dce60acf">

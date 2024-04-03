@@ -14,6 +14,23 @@ Function GetAlignmentBuffer(BlockSize, Value) Export
 	
 EndFunction
 
-#EndRegion 
+#EndRegion
+
+Function GetRegexCache(Pattern) Export
+
+	If StrStartsWith(Pattern, "$") Then
+		Pattern = "\\" + Pattern;
+	EndIf;
+	
+	Pattern = StrReplace(Pattern, "?", ".");
+	Pattern = StrReplace(Pattern, "**", "§§§");
+	Pattern = StrReplace(Pattern, "*", "[^\\.]*");
+	Pattern = StrReplace(Pattern, "§§§", ".*");
+
+	Pattern = "^" + Pattern + "$";
+	
+	Return Pattern;
+	
+EndFunction
 
 #EndRegion

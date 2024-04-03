@@ -53,9 +53,7 @@
 				<ExtendedTooltip name="UsersSearchControlExtendedTooltip" id="13"/>
 			</SearchControlAddition>
 			<Events>
-				<Event name="ValueChoice">UsersValueChoice</Event>
 				<Event name="Selection">UsersSelection</Event>
-				<Event name="OnChange">UsersOnChange</Event>
 			</Events>
 			<ChildItems>
 				<InputField name="UsersValue" id="14">

@@ -3,21 +3,36 @@
 
 #Region ServiceBuilderOptions
 
-Function OnStarted(Schema, Handler = "Started") Export
+Function OnStarted(Handler = "Started") Export
 	
-	Schema.Started = NewHandler(Schema, Handler);	
+	CurrentContext = mol_InternalReuseCalls.GetServiceSchemaContext();
+	If CurrentContext.Schema = Undefined Then
+		Raise "Call without current context";
+	EndIf;
+	
+	CurrentContext.Schema.Started = NewHandler(CurrentContext, Handler);	
 	
 EndFunction
 
-Function OnStopped(Schema, Handler = "Stopped") Export
-
-	Schema.Stopped = NewHandler(Schema, Handler);	
+Function OnStopped(Handler = "Stopped") Export
+	
+	CurrentContext = mol_InternalReuseCalls.GetServiceSchemaContext();
+	If CurrentContext.Schema = Undefined Then
+		Raise "Call without current context";
+	EndIf;
+	
+	CurrentContext.Schema.Stopped = NewHandler(CurrentContext, Handler);	
 	
 EndFunction
 
-Function Meta(Schema, Name, Value) Export
-
-	Schema.Metadata.Insert(Name, Value);
+Function Meta(Name, Value) Export
+	
+	CurrentContext = mol_InternalReuseCalls.GetServiceSchemaContext();
+	If CurrentContext.Schema = Undefined Then
+		Raise "Call without current context";
+	EndIf;
+	
+	CurrentContext.Schema.Metadata.Insert(Name, Value);
 	
 EndFunction
 
@@ -29,12 +44,18 @@ EndFunction
 //
 // Returns:
 //  NewAction - Structure - See. NewActionSchema()
-Function Action(Schema, Handler) Export
-
-	NewElement = NewActionSchema();
-	NewElement.Handler = NewHandler(Schema, Handler); 
+Function Action(Name, Handler) Export
 	
-	Schema.Actions.Add(NewElement);
+	CurrentContext = mol_InternalReuseCalls.GetServiceSchemaContext();
+	If CurrentContext.Schema = Undefined Then
+		Raise "Call without current context";
+	EndIf;
+	
+	NewElement = NewActionSchema();
+	NewElement.Name    = Name;
+	NewElement.Handler = NewHandler(CurrentContext, Handler); 
+	
+	CurrentContext.Schema.Actions.Insert(Name, NewElement);
 	
 	Return NewElement;
 	
@@ -48,12 +69,18 @@ EndFunction
 //
 // Returns:
 //  NewEvent - Structure - See. NewEventSchema()
-Function Event(Schema, Handler) Export
-
-	NewElement = NewEventSchema();
-	NewElement.Handler = NewHandler(Schema, Handler); 
+Function Event(Name, Handler) Export
 	
-	Schema.Events.Add(NewElement);
+	CurrentContext = mol_InternalReuseCalls.GetServiceSchemaContext();
+	If CurrentContext.Schema = Undefined Then
+		Raise "Call without current context";
+	EndIf;
+	
+	NewElement = NewEventSchema();
+	NewElement.Name    = Name;
+	NewElement.Handler = NewHandler(CurrentContext, Handler); 
+	
+	CurrentContext.Schema.Events.Insert(Name, NewElement);
 	
 	Return NewElement;
 	
@@ -65,6 +92,16 @@ EndFunction
 
 #Region Protected
 
+Function GetVersionedFullName(Name, Version = Undefined) Export
+	If Version = Undefined Then
+		Return Name;
+	EndIf;
+	Return StrTemplate("%1.%2",
+		?(TypeOf(Version) = Type("Number"), "v" + Format(Version, "NG="), Version),
+		Name
+	);
+EndFunction
+
 #EndRegion
 
 #Region Private 
@@ -74,23 +111,22 @@ Function NewSchema(ModuleName = "") Export
 	// Map is used to allow internal settings ($noVersionPrefix)
 
 	Result = New Structure;
-	Result.Insert("name"         , ""       );
+	Result.Insert("name"         , ""       ); 
+	Result.Insert("fullName"     , ""       );
 	Result.Insert("version"      , Undefined);
 	Result.Insert("settings"     , New Map  );
 	Result.Insert("dependencies" , New Array);
 	Result.Insert("metadata"     , New Map  );
-	Result.Insert("actions"      , New Array);
+	Result.Insert("actions"      , New Map  );
 	Result.Insert("methods"      , New Array);
 	Result.Insert("hooks"        , New Array); 
 	
-	Result.Insert("events"       , New Array);     
+	Result.Insert("events"       , New Map);     
 	Result.Insert("created"      , Undefined);
 	Result.Insert("started"      , Undefined);
 	Result.Insert("stopped"      , Undefined);
 
 	Result.Insert("channels"     , New Array); 
-	
-	Result.Insert("_ModuleName"  , ModuleName);
 	
 	Return Result;
 	
@@ -153,8 +189,8 @@ Function NewRestSchema()
 	
 EndFunction
 
-Function NewHandler(Schema, Handler)
-	Return StrTemplate("%1.%2", Schema._ModuleName, Handler);	
+Function NewHandler(CurrentContext, Handler)
+	Return StrTemplate("%1.%2", CurrentContext.ModuleName, Handler);	
 EndFunction
 
 #EndRegion

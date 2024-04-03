@@ -53,7 +53,7 @@
 			<DefaultRoles>
 				<xr:Item xsi:type="xr:MDObjectRef">Role.mol_HTTPService</xr:Item>
 			</DefaultRoles>
-			<Vendor/>
+			<Vendor>M.Tregub</Vendor>
 			<Version>0.2.0 beta 2</Version>
 			<BriefInformation/>
 			<DetailedInformation/>
@@ -98,6 +98,12 @@
 			<CommonModule>mol_Logger</CommonModule>
 			<CommonModule>Moleculer</CommonModule>
 			<CommonModule>ServiceExample</CommonModule>
+			<CommonModule>mol_InternalReuseCalls</CommonModule>
+			<CommonModule>mol_ContextFactory</CommonModule>
+			<CommonModule>mol_Broker</CommonModule>
+			<CommonModule>mol_Transit</CommonModule>
+			<CommonModule>mol_Transporter_HTTP</CommonModule>
+			<CommonModule>mol_InternalService</CommonModule>
 			<HTTPService>mol_Moleculer</HTTPService>
 			<FunctionalOption>mol_PublishInternalServices</FunctionalOption>
 			<FunctionalOption>mol_UseDynamicServices</FunctionalOption>
@@ -134,7 +140,6 @@
 			<Catalog>mol_DynamicServices</Catalog>
 			<Enum>mol_ConnectionType</Enum>
 			<Enum>mol_AuthorizationType</Enum>
-			<DataProcessor>mol_Registry</DataProcessor>
 			<DataProcessor>mol_AdminPanel</DataProcessor>
 		</ChildObjects>
 	</Configuration>

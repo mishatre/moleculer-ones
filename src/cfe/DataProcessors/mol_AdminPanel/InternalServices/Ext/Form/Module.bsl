@@ -9,56 +9,43 @@ EndProcedure
 &AtServer
 Procedure LoadInternalServices()
 	
-	InternalServices.Clear();
-	
-	Namespace = Constants.mol_NodeNamespace.Get();
-	ModuleNames = mol_Internal.GetServiceModuleNames(, True);	
-	
-	For Each ModuleName In ModuleNames Do
+	InternalServices.Clear(); 
+	Result = mol_Internal.GetServiceSchemas(True);
+		
+	For Each ServiceInfo In Result.Specification Do
 		
 		NewRow = InternalServices.Add();  
-		NewRow.Module = ModuleName;
+		NewRow.Module = ServiceInfo.Module;
+				
+		NewRow.Name    = ServiceInfo.Name;
+		NewRow.Version = ServiceInfo.Version;
 		
-		Response = mol_Internal.CompileServiceSchema(ModuleName);
-		If mol_Internal.IsError(Response) Then
-			NewRow.Name = "Error";
-			Continue;                     		
-		EndIf;       
-		Schema = Response.Result;
-		
-		NewRow.Name    = Namespace + "." + Schema.Name;
-		NewRow.Version = Schema.Version;
-		
-		Description = Schema.Metadata.Get("$description");
+		Description = ServiceInfo.Metadata.Get("$description");
 		If Description <> Undefined Then
 			NewRow.Description = Description;
 		EndIf;
 		
-		NewRow.Actions = Schema.Actions.Count();
-		NewRow.Events  = Schema.Events.Count();
+		NewRow.Actions = ServiceInfo.Actions.Count();
+		NewRow.Events  = ServiceInfo.Events.Count();
 		
-		NewRow.Details = "Open details";  
-		NewRow.Schema  = Schema;
+		NewRow.ServiceInfo  = ServiceInfo;
 		
 	EndDo; 
 	
-	If mol_Internal.NodeRegistered().Result Then
-		LoadServiceRegistration();	
-	EndIf;
+	LoadServiceRegistration();
 	
 	
 EndProcedure                      
 
 Procedure LoadServiceRegistration()
 	
-	Response = mol_Internal.GetPublishedNodeServices();
+	Response = mol_Internal.GetServicesList();
 	If mol_Internal.IsError(Response) Then
 		// Could not load registered services
 		Return;
 	EndIf;                                   
 	
-	RegisteredServices = Response.Result;
-	For Each Service In RegisteredServices Do
+	For Each Service In Response Do
 		
 		Filter = New Structure();
 		Filter.Insert("Name", Service.Name);
@@ -75,17 +62,13 @@ EndProcedure
 
 &AtClient
 Procedure InternalServicesSelection(Item, SelectedRow, Field, StandardProcessing)
-	If Field.Name = "InternalServicesDetails" Then
-		StandardProcessing = False;
-		Params = New Structure();                           
-		Params.Insert("ServiceModule", InternalServices[SelectedRow].Module);
-		Params.Insert("ServiceSchema", InternalServices[SelectedRow].Schema);
-			
-		OpenForm(
-			"DataProcessor.mol_AdminPanel.Form.ServiceInfo", 
-			Params, 
-			Item,
-		);
-	EndIf;
+	StandardProcessing = False;
+	Params = New Structure();                           
+	Params.Insert("ServiceInfo", InternalServices[SelectedRow].ServiceInfo);	
+	OpenForm(
+		"DataProcessor.mol_AdminPanel.Form.ServiceInfo", 
+		Params, 
+		Item,
+	);
 EndProcedure
 

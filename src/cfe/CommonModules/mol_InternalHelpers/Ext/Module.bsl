@@ -359,7 +359,7 @@ EndFunction
 
 #Region JSONConversion
 
-Function ToString(Object, Format = False) Export
+Function ToJSONString(Object, Format = False) Export
 	
 	If IsString(Object) Then
 		Return Object;
@@ -374,59 +374,48 @@ Function ToString(Object, Format = False) Export
 	
 EndFunction
 
-Function ParseMoleculerResponse(StringResponse) Export
+Function FromJSONString(StringResponse) Export
 	
 	Response = New Structure();
 	Response.Insert("result", Undefined);
 	Response.Insert("error" , Undefined);
-	Response.Insert("meta"  , Undefined);
+	
+	JSONReader = New JSONReader();
 	
 	Try
-		JSONReader = New JSONReader();
-		JSONReader.SetString(StringResponse);  
+		JSONReader.SetString(StringResponse);
+		Response.Result = ReadJSON(JSONReader, False);
+		JSONReader.Close();
 		
-		While JSONReader.Read() Do
-			If JSONReader.CurrentValueType = JSONValueType.PropertyName Then
-				If JSONReader.CurrentValue = "result" Then
-					Response.result = ReadJSON(JSONReader);	
-				ElsIf JSONReader.CurrentValue = "error" Then
-					Response.Error = ReadJSON(JSONReader);	
-				ElsIf JSONReader.CurrentValue = "meta" Then
-					// Meta object can include field name that has incorrect key names (for 1C structure)
-					Response.meta = ReadJSON(JSONReader, True);	
-				EndIf;
-			EndIf;
-		EndDo; 
-	Except
-		Parsed = ParseMoleculerResponseCustom(StringResponse); 
-		If Parsed.Property("result") Then 
-			Response.Result = Parsed.Result;
-		EndIf;
-		If Parsed.Property("error") Then 
-			Response.Error = Parsed.Error;
-		EndIf;
-		If Parsed.Property("meta") Then 
-			Response.Meta = Parsed.Meta;
-		EndIf;
+		Return Response; 
+		 
+	Except       
+		JSONReader.Close();
+		ErrorInfo = ErrorInfo();
+		mol_Logger.Info("InternalHelpers.FromJSONString", "Couldn't parse JSON string using basic parser. Trying custom parser...", ErrorInfo, Metadata.CommonModules.mol_InternalHelpers);				
 	EndTry;
 	
-	Return Response;
+	JSONReader = New JSONReader();
+	
+	Try 
+		JSONReader.SetString(StringResponse);
+		Object = Undefined;
+		ReadJSONCustom(JSONReader, Object);
+		Response.Result = Object;
+		JSONReader.Close(); 
+		
+		Return Response;
+		
+	Except
+		ErrorInfo = ErrorInfo();
+		mol_Logger.Info("InternalHelpers.FromJSONString", "Couldn't parse JSON string using custom parser. Bailing...", ErrorInfo, Metadata.CommonModules.mol_InternalHelpers);	
+	EndTry;
+	
+	Return Undefined;
 	
 EndFunction
 
-Function ParseMoleculerResponseCustom(StringResponse)
-	
-	JSONReader = New JSONReader();
-	JSONReader.SetString(StringResponse);   
-	
-	Result = Undefined;
-	ParseJSONCustom(JSONReader, Result);
-	
-	Return Result;
-	
-EndFunction    
-
-Procedure ParseJSONCustom(JSONReader, Object)
+Procedure ReadJSONCustom(JSONReader, Object)
 
 	PropertyName = Undefined;
     
@@ -440,7 +429,7 @@ Procedure ParseJSONCustom(JSONReader, Object)
 				NewObject = New Map();
 			EndIf;
             
-            ParseJSONCustom(JSONReader, NewObject);   
+            ReadJSONCustom(JSONReader, NewObject);   
 			
 			If IsArray(Object) Then
                 Object.Add(NewObject);
@@ -472,46 +461,6 @@ Procedure ParseJSONCustom(JSONReader, Object)
     EndDo;
 	
 EndProcedure
-
-Function FromString(String) Export
-	
-	Response = New Structure();
-	Response.Insert("result", Undefined);
-	Response.Insert("error" , Undefined);
-	Response.Insert("meta"  , Undefined);
-	
-	JSONReader = New JSONReader();
-	JSONReader.SetString(String);
-	
-	While JSONReader.Read() Do
-		If JSONReader.CurrentValueType = JSONValueType.PropertyName Then
-			If JSONReader.CurrentValue = "result" Then
-				Response.result = ReadJSON(JSONReader);	
-			ElsIf JSONReader.CurrentValue = "error" Then
-				Response.Error = ReadJSON(JSONReader);	
-			ElsIf JSONReader.CurrentValue = "meta" Then
-				Response.meta = ReadJSON(JSONReader, True);	
-			EndIf;
-		EndIf;
-	EndDo;
-	
-	//Object = ReadJSON(JSONReader);
-	JSONReader.Close();
-	
-	Return Response;
-	
-EndFunction
-
-Function BasicFromString(String) Export
-	
-	JSONReader = New JSONReader();
-	JSONReader.SetString(String);
-	Object = ReadJSON(JSONReader);	
-	JSONReader.Close();
-	
-	Return Object;
-	
-EndFunction
 
 #EndRegion
 
@@ -652,6 +601,53 @@ EndFunction
 
 Function GetScope(Region, Date, ServiceName = "s3") Export
 	Return StrTemplate("%1/%2/%3/aws4_request", MakeDateShort(date), region, serviceName);	
+EndFunction
+
+Function Match(Text, Pattern) Export
+
+	// Simple patterns
+	If StrFind(Pattern, "?") = 0 Then
+		// Exact match (eg. "prefix.event")
+		FirstStarPosition = StrFind(Pattern, "*");
+		If FirstStarPosition = 0 Then 
+			Return Pattern = Text;
+		EndIf;
+		
+		// Eg. "prefix**"
+		Length = StrLen(Pattern);
+		If Length > 2 And Right(Pattern, 2) = "**" And FirstStarPosition > Length - 3 Then
+			Pattern = Left(Pattern, Length - 2);
+			Return StrStartsWith(Text, Pattern);
+		EndIf;
+		
+		// Eg. "prefix*"
+		If Length > 1 And Right(Pattern, 1) = "*" And FirstStarPosition > Length - 2 Then
+			Pattern = Left(Pattern, Length - 1);
+			If StrStartsWith(Text, Pattern) Then
+				Return StrFind(Text, ".") = 0;
+			EndIf;
+			Return False;
+		EndIf;
+
+		// Accept simple text, without point character (*)
+		If Length = 1 And FirstStarPosition = 0 Then
+			Return StrFind(Text, ".") = 0;
+		EndIf;
+
+		// Accept all inputs (**)
+		If Length = 2 And FirstStarPosition = 0 And Right(Pattern, 1) = 1 Then
+			Return True;
+		EndIf;
+		
+	EndIf;    
+	
+	// Regex (eg. "prefix.ab?cd.*.foo")
+	RegEx = mol_InternalHelpersReuse.GetRegexCache(Pattern); 
+	Return False;    
+	//Result = StrFindAllByRegularExpression(Text, RegEx);
+	//
+	//Return Result.Count() <> 0;
+	
 EndFunction
 
 #EndRegion 

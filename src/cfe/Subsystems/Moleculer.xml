@@ -38,7 +38,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">8d807ba5-4957-4f98-97ed-a91b3f220ce4</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">CommonPicture.mol_Logo</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.mol_AdminPanel</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">DataProcessor.mol_Registry</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">a56ca0c2-b03d-4c13-993e-78e81969cdc4</xr:Item>
 			</Content>
 		</Properties>
 		<ChildObjects>

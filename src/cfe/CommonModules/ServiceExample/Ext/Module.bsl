@@ -13,19 +13,19 @@ Procedure Service(Schema, Builder) Export
 	Schema.Name    = "example";
 	Schema.Version = 1;
 	
-	Builder.OnStarted(Schema);
-	Builder.OnStopped(Schema);
+	Builder.OnStarted();
+	Builder.OnStopped();
 	
-	Builder.Meta(Schema, "$name"       , "example-service");
-	Builder.Meta(Schema, "$description", "External node example service");
-	Builder.Meta(Schema, "$official"   , False);
+	Builder.Meta("$name"       , "example-service");
+	Builder.Meta("$description", "External node example service");
+	Builder.Meta("$official"   , False);
 
-	Action = Builder.Action(Schema, "ExampleAction");
+	Action = Builder.Action("ExampleAction");
 	Action.Name        = "example-action";
 	Action.Description = "This is example action";
 	//Action.Cache       = True;
 	
-	Event = Builder.Event(Schema, "ExampleEvent");
+	Event = Builder.Event("ExampleEvent");
 	Event.Name        = "example-event";
 	Event.Description = "This is example event";
 	
@@ -38,15 +38,15 @@ EndProcedure
 //
 Procedure Started(Context) Export
 	
-	WriteLogEvent(
-		"Moleculer.Service.Started",
-		EventLogLevel.Note,
-		Undefined,
-		New Structure(
-			"Name",
-			"example"
-		)
-	);
+	//WriteLogEvent(
+	//	"Moleculer.Service.Started",
+	//	EventLogLevel.Note,
+	//	Undefined,
+	//	New Structure(
+	//		"Name",
+	//		"example"
+	//	)
+	//);
 	
 EndProcedure
 
@@ -57,15 +57,15 @@ EndProcedure
 //
 Procedure Stopped(Context) Export
 	
-	WriteLogEvent(
-		"Moleculer.Service.Stopped",
-		EventLogLevel.Note,
-		Undefined,
-		New Structure(
-			"Name",
-			"example"
-		)
-	);
+	//WriteLogEvent(
+	//	"Moleculer.Service.Stopped",
+	//	EventLogLevel.Note,
+	//	Undefined,
+	//	New Structure(
+	//		"Name",
+	//		"example"
+	//	)
+	//);
 	
 EndProcedure
 
@@ -78,7 +78,7 @@ EndProcedure
 // Example action
 Function ExampleAction(Context) Export
 	
-	mol_Logger.mol_Warn("ExampleAction");
+	mol_Logger.Warn("ExampleAction", "Called example.action action");
 	Return "Hello. I am example action";
 	
 EndFunction
@@ -89,16 +89,8 @@ EndFunction
 
 Function ExampleEvent(Context) Export
 	
-	WriteLogEvent(
-		"Moleculer.Service.Event",
-		EventLogLevel.Note,
-		Undefined,
-		New Structure(
-			"Name, EventName",
-			"example",
-			"example-event"
-		)
-	);
+	mol_Logger.Warn("ExampleAction", ">> Received example-event event", Undefined, Metadata.CommonModules.ServiceExample);
+	
 	
 EndFunction
 

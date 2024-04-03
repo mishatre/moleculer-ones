@@ -2,8 +2,7 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	If Not Parameters.Property("ServiceSchema", ServiceSchema) 
-		Or Not Parameters.Property("ServiceModule", ServiceModule) Then
+	If Not Parameters.Property("ServiceInfo", ServiceInfo) Then
 		Cancel = True;
 		Return;
 	EndIf;
@@ -15,13 +14,14 @@ EndProcedure
 &AtServer
 Procedure LoadServiceData()
 	
-	Namespace = Constants.mol_NodeNamespace.Get();
-	
-	ServiceName    = Namespace + "." + ServiceSchema.Name;
-	ServiceVersion = ServiceSchema.Version;
+		
+	ServiceName     = ServiceInfo.Name;
+	ServiceVersion  = ServiceInfo.Version;  	
+	ServiceFullName = ServiceInfo.FullName;
 	
 	ServiceActions.Clear();
-	For Each Action In ServiceSchema.Actions Do
+	For Each KeyValue In ServiceInfo.Actions Do
+		Action = KeyValue.Value;
 		NewRow = ServiceActions.Add();
 		NewRow.Name        = Action.Name;
 		NewRow.Description = Action.Description;
@@ -29,13 +29,14 @@ Procedure LoadServiceData()
 	EndDo;
 	
 	ServiceEvents.Clear();
-	For Each Event In ServiceSchema.Events Do
+	For Each Event In ServiceInfo.Events Do
+		Event = KeyValue.Value;
 		NewRow = ServiceEvents.Add();
 		NewRow.Name        = Event.Name;
 		NewRow.Description = Event.Description;
 	EndDo;    
 	
-	ServiceRawSchema.SetText(mol_InternalHelpers.ToString(ServiceSchema, True));
+	ServiceRawSchema.SetText(mol_InternalHelpers.ToJSONString(ServiceInfo.RawSchema, True));
 	
 	LoadServiceRegistration();
 	
@@ -44,46 +45,44 @@ EndProcedure
 &AtServer
 Procedure LoadServiceRegistration()
 	
-	If Not mol_Internal.NodeRegistered().Result Then
-		SetRegistrationButtonAvailability();		
-	EndIf;
-	
-	Response = mol_Internal.GetPublishedNodeServices();
-	If mol_Internal.IsError(Response) Then 
-		ServiceRegistered = Undefined;
-		RegistrationStatus = New FormattedString(
-			"UNKNOWN",
-			,
-			StyleColors.SpecialTextColor
-		);            
-		SetRegistrationButtonAvailability();
-		Return;
-	EndIf;    
-	
-	ServiceRegistered = False;
-	
-	RegisteredServices = Response.Result;
-	For Each Service In RegisteredServices Do
-		If Service.Name = ServiceName Then
-			ServiceRegistered = True;
-			Break;
-		EndIf;
-	EndDo;     
-	
-	If ServiceRegistered Then 
-		RegistrationStatus = New FormattedString(
-				"Registered",
-				,
-				StyleColors.AccentColor
-			);
-	Else
-		RegistrationStatus = New FormattedString(
-			"Unregistered",
-			,
-			StyleColors.FieldTextColor
-		);
-	EndIf;
-	
+	//SetRegistrationButtonAvailability();
+	//
+	//Response = mol_Internal.GetPublishedNodeServices();
+	//If mol_Internal.IsError(Response) Then 
+	//	ServiceRegistered = Undefined;
+	//	RegistrationStatus = New FormattedString(
+	//		"UNKNOWN",
+	//		,
+	//		StyleColors.SpecialTextColor
+	//	);            
+	//	SetRegistrationButtonAvailability();
+	//	Return;
+	//EndIf;    
+	//
+	//ServiceRegistered = False;
+	//
+	//RegisteredServices = Response.Result;
+	//For Each Service In RegisteredServices Do
+	//	If Service.Name = ServiceName Then
+	//		ServiceRegistered = True;
+	//		Break;
+	//	EndIf;
+	//EndDo;     
+	//
+	//If ServiceRegistered Then 
+	//	RegistrationStatus = New FormattedString(
+	//			"Registered",
+	//			,
+	//			StyleColors.AccentColor
+	//		);
+	//Else
+	//	RegistrationStatus = New FormattedString(
+	//		"Unregistered",
+	//		,
+	//		StyleColors.FieldTextColor
+	//	);
+	//EndIf;
+	//
 	SetRegistrationButtonAvailability();
 	
 EndProcedure  
@@ -103,7 +102,11 @@ Procedure SetRegistrationButtonAvailability()
 		Items.RegisterService.Visible   = False;
 		Items.UnregisterService.Visible = False;
 		Items.CheckRegistration.Visible = True;
-	EndIf;
+	EndIf;   
+	
+	Items.RegisterService.Visible   = True;
+	Items.UnregisterService.Visible = true;
+	Items.CheckRegistration.Visible = True;
 	
 EndProcedure
 
@@ -118,7 +121,7 @@ EndProcedure
 Procedure RegisterServiceAtServer()
 	
 	RegistrationResponse = Undefined;
-	Response = mol_Internal.RegisterNodeService(ServiceModule); 
+	Response = mol_Internal.PublishService(ServiceFullName); 
 	RegistrationResponse = Response;
 	If mol_Internal.IsError(Response) Then 
 		ServiceRegistered = Undefined;
@@ -130,8 +133,7 @@ Procedure RegisterServiceAtServer()
 		Return;
 	EndIf;  
 	
-	Result = Response.Result;
-	If Result.Success = True Then  
+	If Response = True Then  
 		ServiceRegistered = True;
 		RegistrationStatus = New FormattedString("Registered ",,StyleColors.AccentColor);	
 	Else                         
@@ -155,7 +157,7 @@ EndProcedure
 Procedure UnregisterServiceAtServer()
 	
 	RegistrationResponse = Undefined;
-	Response = mol_Internal.RevokeNodeServicePubliction(ServiceName, ServiceVersion); 
+	Response = mol_Internal.RemoveService(ServiceFullName); 
 	RegistrationResponse = Response;
 	If mol_Internal.IsError(Response) Then 
 		ServiceRegistered = Undefined;
