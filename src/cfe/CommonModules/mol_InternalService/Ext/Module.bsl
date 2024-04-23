@@ -10,72 +10,42 @@
 //
 Procedure Service(Schema, Builder) Export
 	
-	Schema.Name    = "$node"; 
+	#If Server And Not Server Then
+		Builder = mol_SchemaFactory;
+	#EndIf
+	
+	Schema.Name = "$node"; 
 	
 	Action = Builder.Action("list", "ListAction");
 	Action.Cache   = False;
 	Action.Tracing = False;
-	Action.Params = New Structure();
-	Action.Params.Insert("withServices", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("onlyAvailable", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
+	Action.Params.Insert("withServices" , Builder.TypeBoolean());
+	Action.Params.Insert("onlyAvailable", Builder.TypeBoolean());   
 	
 	Action = Builder.Action("services", "ServicesAction");
 	Action.Cache   = False;
 	Action.Tracing = False;
-	Action.Params = New Structure();
-	Action.Params.Insert("onlyLocal", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("withActions", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	); 
-	Action.Params.Insert("withEvents", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("onlyAvailable", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("grouping", 
-		New Structure("type, optional, convert, default", "boolean", True, True, True)
-	);  
+	Action.Params.Insert("onlyLocal"    , Builder.TypeBoolean());
+	Action.Params.Insert("withActions"  , Builder.TypeBoolean()); 
+	Action.Params.Insert("withEvents"   , Builder.TypeBoolean());
+	Action.Params.Insert("onlyAvailable", Builder.TypeBoolean());
+	Action.Params.Insert("grouping"     , Builder.TypeBoolean(True));  
 	
 	Action = Builder.Action("actions", "ActionsAction");
 	Action.Cache   = False;
 	Action.Tracing = False;
-	Action.Params = New Structure();
-	Action.Params.Insert("onlyLocal", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("skipInternal", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	); 
-	Action.Params.Insert("withEndpoints", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("onlyAvailable", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
+	Action.Params.Insert("onlyLocal"    , Builder.TypeBoolean());
+	Action.Params.Insert("skipInternal" , Builder.TypeBoolean()); 
+	Action.Params.Insert("withEndpoints", Builder.TypeBoolean());
+	Action.Params.Insert("onlyAvailable", Builder.TypeBoolean());
 	
 	Action = Builder.Action("events", "EventsAction");
 	Action.Cache   = False;
 	Action.Tracing = False;
-	Action.Params = New Structure();
-	Action.Params.Insert("onlyLocal", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("skipInternal", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	); 
-	Action.Params.Insert("withEndpoints", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	);
-	Action.Params.Insert("onlyAvailable", 
-		New Structure("type, optional, convert, default", "boolean", True, True, False)
-	); 
+	Action.Params.Insert("onlyLocal"    , Builder.TypeBoolean());
+	Action.Params.Insert("skipInternal" , Builder.TypeBoolean()); 
+	Action.Params.Insert("withEndpoints", Builder.TypeBoolean());
+	Action.Params.Insert("onlyAvailable", Builder.TypeBoolean()); 
 	
 	Action = Builder.Action("health", "HealthAction");
 	Action.Cache   = False;
@@ -90,9 +60,9 @@ Procedure Service(Schema, Builder) Export
 	Action.Tracing = False; 
 	
 	Rules = New Array();
-	Rules.Add(New Structure("type", "string"));
-	Rules.Add(New Structure("type, items", "array", "string"));
-	DefaultParam = New Structure("type, optional, rules", "multi", True, Rules);
+	Rules.Add(Builder.TypeString());
+	Rules.Add(Builder.TypeArray("string"));
+	DefaultParam = Builder.TypeMulti(Rules);
 	
 	Action.Params = New Structure();
 	Action.Params.Insert("types"   , DefaultParam);
@@ -214,7 +184,7 @@ Function RegistrationAction(Context) Export
 	If AuthType = Enums.mol_AuthorizationType.UsingAccessToken Then
 		UserUUID  = Constants.mol_NodeUser.Get();
 		FoundUser = InfoBaseUsers.FindByUUID(UserUUID);
-		Result.Insert("accessToken", mol_InternalHelpers.CreateJWTAccessKey(
+		Result.Insert("accessToken", mol_Helpers.CreateJWTAccessKey(
 			Constants.mol_NodeSecretKey.Get(),
 			FoundUser.Name
 		));                                                            

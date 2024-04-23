@@ -30,6 +30,18 @@
 				<xr:ClassId>fb282519-d103-4dd3-bc12-cb271d631dfc</xr:ClassId>
 				<xr:ObjectId>bcc88bb0-13ca-4ce5-995f-25c4a68f812d</xr:ObjectId>
 			</xr:ContainedObject>
+			<xr:PropertyState>
+				<xr:Property>DefaultRunMode</xr:Property>
+				<xr:State>Notify</xr:State>
+			</xr:PropertyState>
+			<xr:PropertyState>
+				<xr:Property>InterfaceCompatibilityMode</xr:Property>
+				<xr:State>Notify</xr:State>
+			</xr:PropertyState>
+			<xr:PropertyState>
+				<xr:Property>CompatibilityMode</xr:Property>
+				<xr:State>Notify</xr:State>
+			</xr:PropertyState>
 		</InternalInfo>
 		<Properties>
 			<ObjectBelonging>Adopted</ObjectBelonging>
@@ -42,7 +54,7 @@
 			</Synonym>
 			<Comment/>
 			<ConfigurationExtensionPurpose>AddOn</ConfigurationExtensionPurpose>
-			<KeepMappingToExtendedConfigurationObjectsByIDs>true</KeepMappingToExtendedConfigurationObjectsByIDs>
+			<KeepMappingToExtendedConfigurationObjectsByIDs>false</KeepMappingToExtendedConfigurationObjectsByIDs>
 			<NamePrefix>mol_</NamePrefix>
 			<ConfigurationExtensionCompatibilityMode>Version8_3_21</ConfigurationExtensionCompatibilityMode>
 			<DefaultRunMode>ManagedApplication</DefaultRunMode>
@@ -54,7 +66,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">Role.mol_HTTPService</xr:Item>
 			</DefaultRoles>
 			<Vendor>M.Tregub</Vendor>
-			<Version>0.2.0 beta 2</Version>
+			<Version>0.2.0 beta 3</Version>
 			<BriefInformation/>
 			<DetailedInformation/>
 			<Copyright/>
@@ -65,7 +77,6 @@
 		</Properties>
 		<ChildObjects>
 			<Language>Русский</Language>
-			<Language>English</Language>
 			<Subsystem>Moleculer</Subsystem>
 			<StyleItem>mol_SelectionColor</StyleItem>
 			<StyleItem>mol_ЦветФона</StyleItem>
@@ -89,58 +100,57 @@
 			<CommonPicture>mol_Logo</CommonPicture>
 			<Role>mol_HTTPService</Role>
 			<Role>mol_Administrator</Role>
-			<CommonModule>mol_Errors</CommonModule>
-			<CommonModule>mol_Internal</CommonModule>
-			<CommonModule>mol_InternalReuse</CommonModule>
-			<CommonModule>mol_InternalHelpers</CommonModule>
-			<CommonModule>mol_InternalHelpersReuse</CommonModule>
-			<CommonModule>mol_SchemaBuilder</CommonModule>
-			<CommonModule>mol_Logger</CommonModule>
 			<CommonModule>Moleculer</CommonModule>
-			<CommonModule>ServiceExample</CommonModule>
-			<CommonModule>mol_InternalReuseCalls</CommonModule>
-			<CommonModule>mol_ContextFactory</CommonModule>
 			<CommonModule>mol_Broker</CommonModule>
+			<CommonModule>mol_ContextFactory</CommonModule>
+			<CommonModule>mol_Errors</CommonModule>
+			<CommonModule>mol_Helpers</CommonModule>
+			<CommonModule>mol_Logger</CommonModule>
+			<CommonModule>mol_Reuse</CommonModule>
+			<CommonModule>mol_ReuseCalls</CommonModule>
+			<CommonModule>mol_SchemaFactory</CommonModule>
 			<CommonModule>mol_Transit</CommonModule>
-			<CommonModule>mol_Transporter_HTTP</CommonModule>
 			<CommonModule>mol_InternalService</CommonModule>
+			<CommonModule>ServiceExample</CommonModule>
+			<CommonModule>mol_PacketFactory</CommonModule>
 			<HTTPService>mol_Moleculer</HTTPService>
 			<FunctionalOption>mol_PublishInternalServices</FunctionalOption>
 			<FunctionalOption>mol_UseDynamicServices</FunctionalOption>
 			<FunctionalOption>mol_UseProxyForConnection</FunctionalOption>
-			<Constant>mol_SidecarEndpoint</Constant>
-			<Constant>mol_SidecarPort</Constant>
-			<Constant>mol_SidecarUseSSL</Constant>
-			<Constant>mol_SidecarSecretKey</Constant>
-			<Constant>mol_SidecarAccessKey</Constant>
-			<Constant>mol_NodeNamespace</Constant>
+			<Constant>mol_ConnectionType</Constant>
+			<Constant>mol_NodeAuthorizationType</Constant>
 			<Constant>mol_NodeEndpoint</Constant>
+			<Constant>mol_NodeId</Constant>
+			<Constant>mol_NodeNamespace</Constant>
 			<Constant>mol_NodePort</Constant>
-			<Constant>mol_NodeUseSSL</Constant>
+			<Constant>mol_NodePublicationPath</Constant>
 			<Constant>mol_NodeSecretKey</Constant>
 			<Constant>mol_NodeUser</Constant>
-			<Constant>mol_PublishServices</Constant>
-			<Constant>mol_CommonModulePrefix</Constant>
-			<Constant>mol_HTTPServiceUser</Constant>
-			<Constant>mol_ConnectionType</Constant>
-			<Constant>mol_UseDynamicServices</Constant>
-			<Constant>mol_NodeAuthorizationType</Constant>
 			<Constant>mol_NodeUserPassword</Constant>
-			<Constant>mol_NodePublicationPath</Constant>
-			<Constant>mol_NodeId</Constant>
-			<Constant>mol_UseProxyForConnection</Constant>
+			<Constant>mol_NodeUseSSL</Constant>
+			<Constant>mol_ProxyPassword</Constant>
+			<Constant>mol_ProxyPort</Constant>
 			<Constant>mol_ProxyProtocol</Constant>
 			<Constant>mol_ProxyServer</Constant>
-			<Constant>mol_ProxyPort</Constant>
 			<Constant>mol_ProxyUser</Constant>
-			<Constant>mol_ProxyPassword</Constant>
+			<Constant>mol_PublishServices</Constant>
+			<Constant>mol_SidecarAccessKey</Constant>
+			<Constant>mol_SidecarEndpoint</Constant>
+			<Constant>mol_SidecarPort</Constant>
+			<Constant>mol_SidecarSecretKey</Constant>
+			<Constant>mol_SidecarUseSSL</Constant>
+			<Constant>mol_UseDynamicServices</Constant>
+			<Constant>mol_UseProxyForConnection</Constant>
+			<Constant>mol_LogLevel</Constant>
 			<CommonForm>mol_ErrorViewer</CommonForm>
 			<CommonForm>mol_SidecarInfo</CommonForm>
 			<CommonForm>mol_UserSelection</CommonForm>
 			<Catalog>mol_DynamicServices</Catalog>
 			<Enum>mol_ConnectionType</Enum>
 			<Enum>mol_AuthorizationType</Enum>
+			<Enum>mol_LogLevel</Enum>
 			<DataProcessor>mol_AdminPanel</DataProcessor>
+			<DataProcessor>mol_Testing</DataProcessor>
 		</ChildObjects>
 	</Configuration>
 </MetaDataObject>

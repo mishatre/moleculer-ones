@@ -23,7 +23,7 @@ Procedure LoadMoleculerError(Error)
 	EndIf;
 	
 	If Error.Property("Data") And Error.Data <> Undefined Then
-		ErrorData = mol_InternalHelpers.ToJSONString(Error.Data, True);
+		ErrorData = mol_Helpers.ToJSONString(Error.Data, True);
 		Items.GroupData.Visible = True;
 	EndIf;                                                         
 	

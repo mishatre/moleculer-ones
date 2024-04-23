@@ -5,7 +5,7 @@ Procedure Debug(EventName, Message, Data = Undefined, Meta = Undefined) Export
 	
 	WriteLogEventSystem(
 		EventName,
-		"debug",
+		EventLogLevel.Note,
 		Meta,
 		Data,
 		Message
@@ -17,7 +17,7 @@ Procedure Error(EventName, Message, Data = Undefined, Meta = Undefined) Export
 		
 	WriteLogEventSystem(
 		EventName,
-		"error",
+		EventLogLevel.Error,
 		Meta,
 		Data,
 		Message
@@ -29,7 +29,7 @@ Procedure Warn(EventName, Message, Data = Undefined, Meta = Undefined) Export
 		
 	WriteLogEventSystem(
 		EventName,
-		"warn",
+		EventLogLevel.Warning,
 		Meta,
 		Data,
 		Message
@@ -41,7 +41,7 @@ Procedure Info(EventName, Message, Data = Undefined, Meta = Undefined) Export
 	
 	WriteLogEventSystem(
 		EventName,
-		"info",
+		EventLogLevel.Information,
 		Meta,
 		Data,
 		Message
@@ -49,8 +49,21 @@ Procedure Info(EventName, Message, Data = Undefined, Meta = Undefined) Export
 	
 EndProcedure  
 
+#EndRegion
 
-#EndRegion   
+#Region Protected
+
+Function GetLogLevel(Force = False) Export 
+	
+	If Not Force Then
+		Return mol_Reuse.GetLogLevel();
+	EndIf;
+	
+	Return Constants.mol_LogLevel.Get();
+	
+EndFunction
+
+#EndRegion
 
 #Region Private
 
@@ -60,40 +73,42 @@ Procedure WriteLogEventSystem(EventName, LogLevel, Meta = Undefined, Val Data, M
 		Return;
 	#EndIf
 	
-	Level = GetLogLevel(LogLevel);
+	LoggingLevel = GetLogLevel();
+	If LoggingLevel = Enums.mol_LogLevel.Error Then
+		// Allow only error logs
+		If LogLevel <> EventLogLevel.Error Then
+			Return;
+		EndIf;
+	ElsIf LoggingLevel = Enums.mol_LogLevel.Warn Then
+		// Allow only warn and error logs
+		If LogLevel = EventLogLevel.Note Or LogLevel = EventLogLevel.Information Then
+			Return;
+		EndIf;	
+	ElsIf LoggingLevel = Enums.mol_LogLevel.Info Then
+		// Allow all except debug
+		If LogLevel = EventLogLevel.Note Then
+			Return;
+		EndIf;
+	ElsIf LoggingLevel = Enums.mol_LogLevel.Debug Then
+		// Allow all logs	
+	EndIf;
 	
-	//If Lower(Level) = "debug" And Not ОбщегоНазначения.РежимОтладки() Then
+	//If LogLevel = EventLogLevel.Note And Not ОбщегоНазначения.РежимОтладки() Then
 	//	Return;
 	//EndIf;  
 	
-	If TypeOf(Data) = Type("Structure") Or TypeOf(Data) = Type("Map") Then
-		Data = mol_InternalHelpers.ToJSONString(Data, True);
+	If mol_Helpers.IsObject(Data) Or mol_Helpers.IsMap(Data) Then
+		Data = mol_Helpers.ToJSONString(Data, True);
 	EndIf;
 
 	WriteLogEvent(
 		EventName,
-		Level,
+		LogLevel,
 		Meta,
 		Data,
 		Message
 	);
 	
 EndProcedure      
-
-Function GetLogLevel(Val Level) 
-	
-    Level = Lower(Level);
-	
-	If Level = "debug" Then
-		Return EventLogLevel.Note;
-	ElsIf Level = "error" Then
-		Return EventLogLevel.Error;
-	ElsIf Level = "warn" Then
-		Return EventLogLevel.Warning;	
-	EndIf;
-	
-	Return EventLogLevel.Information;
-	
-EndFunction 
 
 #EndRegion

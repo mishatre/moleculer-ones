@@ -32,9 +32,9 @@
 			<Explanation/>
 		</Properties>
 		<ChildObjects>
-			<Form>Configuration</Form>
 			<Form>Form</Form>
-			<Form>InternalServices</Form>
+			<Form>Configuration</Form>
+			<Form>LocalServices</Form>
 			<Form>ServiceInfo</Form>
 			<Command uuid="b4b66340-a6d2-48fd-8707-4f1663cc652a">
 				<Properties>

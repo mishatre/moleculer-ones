@@ -65,9 +65,15 @@ EndFunction
 
 #EndRegion
 
-Function Broker() Export
-	Return Eval("mol_Broker");
+Function GetCurrentContext() Export
+	Return mol_ContextFactory.GetCurrentContext();
 EndFunction
+
+Function Broker() Export
+	Return mol_Broker;
+EndFunction
+
+#Region Constructor
 
 // Create opts object
 //
@@ -126,5 +132,7 @@ Function NewActionDef(ActionName, Val Params = Undefined, Opts = Undefined) Expo
 	Return Result;
 	
 EndFunction
+
+#EndRegion
 
 #EndRegion  

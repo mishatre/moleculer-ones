@@ -19,7 +19,7 @@
 				<xr:Item xsi:type="xr:MDObjectRef">21001a01-e14e-41dd-81ec-a33050746c34</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">a60131f0-552d-4d45-b141-274289fd4bc9</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">2efd5698-0519-48c9-8d4c-36f09b85e1c7</xr:Item>
-				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_SchemaBuilder</xr:Item>
+				<xr:Item xsi:type="xr:MDObjectRef">CommonModule.mol_SchemaFactory</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">a972f773-5561-491e-ae98-a185b42aaf83</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">305b989d-fe67-4647-ac47-dd8df978fed1</xr:Item>
 				<xr:Item xsi:type="xr:MDObjectRef">Constant.mol_NodeEndpoint</xr:Item>

@@ -61,8 +61,8 @@ Function GracefulStopTimeoutError(Message = "", Data = Undefined, ErrorInfo = Un
 	Return NewError("GRACEFUL_STOP_TIMEOUT", 500, "MoleculerError", Message, Data, ErrorInfo);
 EndFunction
 
-Function ProtocolVersionMismatchError(Message = "", Data = Undefined, ErrorInfo = Undefined) Export
-	Return NewError("PROTOCOL_VERSION_MISMATCH", 500, "MoleculerError", Message, Data, ErrorInfo);
+Function ProtocolVersionMismatchError(Data = Undefined, ErrorInfo = Undefined) Export
+	Return NewError("PROTOCOL_VERSION_MISMATCH", 500, "MoleculerError", "Protocol version mismatch.", Data, ErrorInfo);
 EndFunction
 
 Function InvalidPacketData(Message = "", Data = Undefined, ErrorInfo = Undefined) Export

@@ -1,164 +1,326 @@
 ﻿
-#Region Protected
+#Region Public
 
-Function Request(Context) Export 
+Function DiscoverNodes() Export
 	
-	TraceHeaders = New Map();
-	TraceHeaders.Insert("x-trace-span-name", "action " + Context.Action.Name);
-	TraceHeaders.Insert("x-trace-parent-id", Context.ParentID);
-	TraceHeaders.Insert("x-trace-id", Context.RequestID);
-
-	Payload = New Structure();
-	Payload.Insert("id"       , Context.Id);
-	Payload.Insert("action"   , Context.Action.Name);
-	Payload.Insert("params"   , Context.Params);
-	Payload.Insert("meta"     , Context.Meta);
-	Payload.Insert("timeout"  , ?(Context.Options.Property("Timeout"), Context.Options.Timeout, Undefined));
-	Payload.Insert("level"    , Context.Level);
-	Payload.Insert("tracing"  , Context.Tracing);
-	Payload.Insert("parentID" , Context.ParentID);
-	Payload.Insert("requestID", Context.RequestID);
-	Payload.Insert("caller"   , Context.Caller);    
-	
-	Request = New Structure();
-	Request.Insert("action", Context.Action);
-	Request.Insert("nodeID", Context.NodeID);
-	Request.Insert("Context", Context);
-	
-	Target = "sidecar";
-	Packet = NewPacket("PACKET_REQUEST", Target, Payload);
-	
-	PendingRequests = mol_InternalReuseCalls.GetPendingRequests();
-	PendingRequests.Insert(Context.Id, Request);
-	
-	Response = Send(Packet, Context.RequestId, TraceHeaders);
- 	If mol_Internal.IsError(Response) Then
-		mol_Logger.Error("Transporters.Request",
-			StrTemplate(
-				"Unable to send '%1' response to '%2' node.",
-				Context.Id, 
-				Target,
-			),
-			Response.Error,
-			Metadata.CommonModules.mol_Transit
-		);
-		Return Response;
-	EndIf;
-	mol_Internal.Unwrap(Response);
-	
-	Return MessageHandler(Response.Type, Response);
-		
-EndFunction 
-
-Function DiscoverSidecarNode() Export
-
-	Response = Send(NewPacket("PACKET_DISCOVER"));
- 	If mol_Internal.IsError(Response) Then
+	Response = Send(mol_PacketFactory.Discover());
+ 	If mol_Helpers.IsError(Response) Then
 		mol_Logger.Error("Transporters.DiscoverNode",
 			"Unable to send DISCOVER packet.",
 			Response.Error,
 			Metadata.CommonModules.mol_Transit
 		);
 	EndIf;
-	mol_Internal.Unwrap(Response);
+	mol_Helpers.Unwrap(Response);
 	
 	Return MessageHandler(Response.Type, Response);
 	
 EndFunction
 
-Function SendPing(NodeID, Id = Undefined) Export
-
-	Response = Send(NewPacket("PACKET_PING", NodeID, New Structure(
-		"time, Nid",
-		CurrentUniversalDateInMilliseconds(),
-		?(Id <> Undefined, Id, mol_Broker.GenerateUid())
-	)));
- 	If mol_Internal.IsError(Response) Then
-		mol_Logger.Error("Transporters.SendDisconnectPacket",
-			StrTemplate("Unable to send PING packet to '%1' node.", NodeID),
+Function Disconnect() Export
+	
+	Response = Send(mol_PacketFactory.Disconnect("sidecar"));
+ 	If mol_Helpers.IsError(Response) Then
+		mol_Logger.Error("Transporters.DiscoverNode",
+			"Unable to send DISCOVER packet.",
 			Response.Error,
 			Metadata.CommonModules.mol_Transit
 		);
 	EndIf;
-	mol_Internal.Unwrap(Response);
+	mol_Helpers.Unwrap(Response);
 	
 	Return Response;
 	
 EndFunction
 
-#Region MessageHandler
+Function Request(Context) Export 
+		
+	Request = New Structure();                              
+	Request.Insert("action" , Context.Action);
+	Request.Insert("nodeID" , Context.NodeID);
+	Request.Insert("context", Context);
+	
+	PendingRequests = mol_ReuseCalls.GetPendingRequests();
+	PendingRequests.Insert(Context.Id, Request);
+	
+	Response = Send(mol_PacketFactory.Request(Context));
+ 	If mol_Helpers.IsError(Response) Then
+		mol_Logger.Error("Transit.Request",
+			StrTemplate(
+				"Unable to send '%1' response to '%2' node.",
+				Context.Id, 
+				Context.NodeID,
+			),
+			Response.Error,
+			Metadata.CommonModules.mol_Transit
+		);
+		Return Response;
+	EndIf;
+	mol_Helpers.Unwrap(Response);
+	
+	Return MessageHandler(Response.Type, Response);
+		
+EndFunction 
 
-Function NewPacket(Type, Target = Undefined, Payload = Undefined) Export
+Function SendEvent(Context) Export
 	
-	Result = New Structure();
-	Result.Insert("type", ?(Type = Undefined, "PACKET_UNKNOWN", Type));
-	Result.Insert("target", Target);
-	Result.Insert("payload", ?(Payload = Undefined, New Structure(), Payload));
+	Response = Send(mol_PacketFactory.Event(Context));
+	If mol_Helpers.IsError(Response) Then
+		mol_Logger.Error("Transit.SendEvent",
+			StrTemplate(
+				"Unable to send '%1' event to '%2' node.",
+				Context.Id, 
+				Context.NodeID,
+			),
+			Response.Error,
+			Metadata.CommonModules.mol_Transit
+		);      
+		
+		// mol_Broker.BroadcastLocal("$sidecar-transit.error");
+	EndIf;
+	mol_Helpers.Unwrap(Response);
 	
-	Return Result;
+	Return Response;
 	
 EndFunction
 
-Function MessageHandler(Cmd, Packet) Export
+Function SendChannelEvent(ChannelName, Data, Opts = Undefined) Export 
+	If Opts = Undefined Then
+		Opts = New Structure();
+	EndIf;
+	
+	Target = "sidecar";
+	Response = Send(mol_PacketFactory.ChannelEvent(Target, ChannelName, Data, Opts));
+	If mol_Helpers.IsError(Response) Then
+		mol_Logger.Error("Transit.SendChannelEvent",
+			StrTemplate(
+				"Unable to send '%1' channel event to '%2' node.",
+				ChannelName, 
+				Target,
+			),
+			Response.Error,
+			Metadata.CommonModules.mol_Transit
+		);      
+		
+		// mol_Broker.BroadcastLocal("$sidecar-transit.error");
+	EndIf;
+	mol_Helpers.Unwrap(Response);
+	
+	Return Response;
+	
+EndFunction
 
-	Try
-		Payload = Packet.Payload;  
-		If Payload = Undefined Then
-			Return mol_Internal.NewResponse(
-				mol_Errors.InvalidPacketData("Missing response payload.")
-			);	
+Function SendNodeInfo() Export
+	
+	Target = "sidecar";
+	Response = Send(mol_PacketFactory.Info(Target, mol_Broker.GetNodeInfo()));
+	If mol_Helpers.IsError(Response) Then
+		mol_Logger.Error("Transit.SendNodeInfo",
+			StrTemplate(
+				"Unable to send INFO packet to '%2' node.",
+				Target,
+			),
+			Response.Error,
+			Metadata.CommonModules.mol_Transit
+		);      
+		
+		// mol_Broker.BroadcastLocal("$sidecar-transit.error");
+	EndIf;
+	mol_Helpers.Unwrap(Response);
+	
+	Return Response;
+	
+EndFunction
+
+Function SendPing(Id = Undefined) Export
+	
+	Target = "sidecar";
+	Response = Send(mol_PacketFactory.Ping(Target, Id));
+ 	If mol_Helpers.IsError(Response) Then
+		mol_Logger.Error("Transit.SendPing",
+			StrTemplate("Unable to send PING packet to '%1' node.", Target),
+			Response.Error,
+			Metadata.CommonModules.mol_Transit
+		);
+	EndIf;
+	mol_Helpers.Unwrap(Response);
+	
+	Return MessageHandler(Response.Type, Response);
+	
+EndFunction
+
+#EndRegion
+
+#Region Protected
+
+Function Send(Packet)
+		
+	Message = mol_Helpers.ToJSONString(Packet);
+	
+	Response = Undefined;
+	If True Then // If Transporter = "Transporter_HTTP" Then 
+		
+		TraceHeaders = New Map();
+		If Packet.Type = "PACKET_REQUEST" Then
+			TraceHeaders.Insert("x-trace-span-name", "action " + Packet.Payload.Action);
+			TraceHeaders.Insert("x-trace-parent-id", Packet.Payload.ParentID);
+			TraceHeaders.Insert("x-trace-id"       , Packet.Payload.RequestID);	   
 		EndIf;
 		
-		If Not Payload.Property("Ver") Or Payload.Ver <> "1" Then
-			Return mol_Internal.NewResponse(
-				mol_Errors.ProtocolVersionMismatchError(Undefined, 
-					New Structure(
-						"NodeID, Actual, Received",
-						Payload.Sender,
-						"1",
-						Payload.Ver
-					)
-				)
-			);  
-		EndIf;
+		Response = Transporter_HTTP_Send(Message, TraceHeaders);
 		
-		If Cmd = "PACKET_REQUEST" Then
-			Return RequestHandler(Payload);
-		// Response
-		ElsIf Cmd = "PACKET_RESPONSE" Then
-			Return ResponseHandler(Payload);
-		// Event
-		ElsIf Cmd = "PACKET_EVENT" Then
-			Return EventHandler(payload);
-		// Discover
-		ElsIf Cmd = "PACKET_DISCOVER" Then
-			//NodeInfo = mol_Broker.GetLocalNodeInfo(Payload.Sender);
-			//Return Publish(
-			//	NewPacket("PACKET_INFO", Payload.Sender, NodeInfo)
-			//);
-		// Node info
-		ElsIf Cmd = "PACKET_INFO" Then
-			Return ProcessRemoteNodeInfo(Payload.Sender, Payload);
-		// Disconnect
-		ElsIf Cmd = "PACKET_DISCONNECT" Then
-			//this.discoverer.remoteNodeDisconnected(payload.sender, false);
-		// Heartbeat
-		ElsIf Cmd = "PACKET_HEARTBEAT" Then
-			//this.discoverer.heartbeatReceived(payload.sender, payload);
-		// Ping
-		ElsIf Cmd = "PACKET_PING" Then
-			Return SendPong(Payload);
-		// Pong
-		ElsIf Cmd = "PACKET_PONG" Then
-			//this.processPong(payload);
+	EndIf;
+	
+	If mol_Helpers.IsError(Response) Then
+		Return Response;
+	EndIf;    
+	mol_Helpers.Unwrap(Response);
+	
+	Response = mol_Broker.Deserialize(Response.GetBodyAsString());
+	
+	Return Response;
+	
+EndFunction
+
+#Region Transporters
+
+#Region TransporterHTTP
+
+Function Transporter_HTTP_Send(Message, Headers = Undefined)
+		
+	Payload = GetBinaryDataFromString(Message, TextEncoding.UTF8, False);
+	
+	If Not mol_Helpers.IsMap(Headers) Then
+		Headers = New Map();
+	EndIf;
+	
+	Headers.Insert("content-type"  , "application/json");
+	Headers.Insert("content-length", Format(Payload.Size(), "NG=")); 
+	
+	ConnectionInfo = mol_Broker.GetSidecarConnectionSettings();
+	
+	RequestParameters = mol_Helpers.NewRequestParameters(); 
+	RequestParameters.Endpoint = ConnectionInfo.Endpoint;
+	RequestParameters.Port     = ConnectionInfo.Port;
+	RequestParameters.UseSSL   = ConnectionInfo.UseSSL;
+	RequestParameters.Timeout  = ConnectionInfo.Timeout;
+	RequestParameters.Headers  = Headers;
+	RequestParameters.Method   = "POST";
+	RequestParameters.Path     = "/v1/message";
+	RequestParameters.Query    = "";                    
+	
+	Options = mol_Helpers.NewRequestOptions(RequestParameters);
+	
+	#Region AuthHeader
+	
+	Region      = "main";
+	ServiceName = "moleculer";
+	Sha256Sum   = mol_Helpers.ToSha256(Payload);
+	
+	Date = CurrentUniversalDate(); 
+	Options.Headers.Insert("x-amz-date"          , mol_Helpers.MakeDateLong(date));
+	Options.Headers.Insert("x-amz-content-sha256", Sha256Sum);
+	AuthorizationHeader = mol_Helpers.SignV4(
+		Options, 
+		ConnectionInfo.AccessKey, 
+		ConnectionInfo.SecretKey, 
+		Region, 
+		Date, 
+		Sha256Sum,
+		ServiceName
+	);      
+	If mol_Helpers.IsError(AuthorizationHeader) Then
+		Return AuthorizationHeader;
+	EndIf;   
+	mol_Helpers.Unwrap(AuthorizationHeader);
+	Options.Headers.Insert("authorization", AuthorizationHeader); 
+	
+	#EndRegion
+	
+	Return PostHTTPRequest(Options, Payload);
+	
+EndFunction
+
+Function Transporter_HTTP_Receive(HTTPServiceRequest) Export
+	
+	BodyString = HTTPServiceRequest.GetBodyAsString();
+	Response = mol_Broker.Deserialize(BodyString);
+	If mol_Helpers.IsError(Response) Then
+		mol_Logger.Error("Transporter_HTTP.Receive",
+			"Malformed request body",
+			BodyString,
+			Metadata.CommonModules.mol_Transit
+		);
+		Return NewServiceResponse(
+			mol_Errors.RequestRejected("Malformed request body", Response.Error)
+		);
+	EndIf;
+	Packet = Response.Result;
+	
+	Result = MessageHandler(Packet.Type, Packet);
+	Return NewServiceResponse(Result);
+	
+EndFunction 
+
+#EndRegion
+
+#EndRegion
+
+#EndRegion
+
+#Region Private
+
+#Region MessageHandler
+
+Function MessageHandler(Cmd, Packet)
+	
+	Payload = mol_Helpers.Get(Packet, "Payload");  
+	If Payload = Undefined Then
+		Return mol_Helpers.NewResponse(
+			mol_Errors.InvalidPacketData("Missing response payload.")
+		);	
+	EndIf;
+	
+	If Packet.Ver <> "1" Then 
+		Data = New Structure();
+		Data.Insert("nodeID"  , Packet.Sender);
+		Data.Insert("actual"  , "1");
+		Data.Insert("received", Packet.Ver);
+		Error = mol_Errors.ProtocolVersionMismatchError(Data);
+		Return mol_Helpers.NewResponse(Error);  
+	EndIf;
+	
+	Try			
+		If Packet.Type = "PACKET_REQUEST" Then
+			Return RequestHandler(Packet);
+		ElsIf Packet.Type = "PACKET_RESPONSE" Then
+			Return ResponseHandler(Packet);
+		ElsIf Packet.Type = "PACKET_EVENT" Then
+			Return EventHandler(Packet);
+		ElsIf Packet.Type = "PACKET_CHANNEL_EVENT" Then
+			Return ChannelEventHandler(Packet);
+		ElsIf Packet.Type = "PACKET_DISCOVER" Then
+		   	Return ProcessDiscover(Packet.Sender);
+		ElsIf Packet.Type = "PACKET_DISCOVER_SERVICES" Then
+		   	Return ProcessDiscoverServices(Packet.Sender);
+		ElsIf Packet.Type = "PACKET_INFO" Then
+			Return Packet.Payload;
+		ElsIf Packet.Type = "PACKET_DISCONNECT" Then
+			Return ProcessDisconnect(Packet.Sender);
+		ElsIf Packet.Type = "PACKET_REQUEST_HEARTBEAT" Then
+			Return ProcessHeartbeatRequest(Packet.Sender);
+		ElsIf Packet.Type = "PACKET_PING" Then
+			Return SendPong(Packet);
+		ElsIf Packet.Type = "PACKET_PONG" Then
+			Return ProcessPong(Packet);
 		EndIf; 
 		
-		Return mol_Internal.NewResponse("UNKNOWN_PACKET_TYPE");
+		Return mol_Helpers.NewResponse("UNKNOWN_PACKET_TYPE");
 		
 	Except                                                  
 		ErrorInfo = ErrorInfo();
 		Error = mol_Errors.RequestRejected("Cannot process packet data", , ErrorInfo);
-		mol_Logger.Error("Transit.MessageHandler", "Cannot process packet data", Undefined, Metadata.CommonModules.mol_Transit);
+		mol_Logger.Error("Transit.MessageHandler", "Cannot process packet data", Error, Metadata.CommonModules.mol_Transit);
 		
 		Params = New Structure();
 		Params.Insert("error" , Error);
@@ -168,49 +330,99 @@ Function MessageHandler(Cmd, Packet) Export
 		
 	EndTry;
 	
-	Return mol_Internal.NewResponse("PACKET_DATA_ERROR");
+	Return mol_Helpers.NewResponse("PACKET_DATA_ERROR");
 		
 	
 EndFunction
 
-#EndRegion
+#Region Handlers
 
-#EndRegion
-
-#Region Private
-
-Function Publish(Packet)   
+Function RequestHandler(Packet)
 	
-	Packet.Payload.Insert("ver"   , "1");
-	Packet.Payload.Insert("sender", Constants.mol_NodeId.Get());
-	Return Packet;  
+	Payload = Packet.Payload;
+	Sender  = Packet.Sender;
+	
+	RequestID = ?(Payload.RequestID <> Undefined, "with requestID '" + Payload.RequestID + "' ", "");
+	mol_Logger.Debug("Transit.RequestHandler",
+		StrTemplate("<= Request '%1' %2received from '%3' node.",
+			Payload.Action,                             
+			RequestID,
+			Sender
+		),
+		Payload,
+		Metadata.CommonModules.mol_Transit
+	);  
+	
+	Error = Undefined;
+	Data  = Undefined;
+	Meta  = Undefined;
+	
+	Try  
+		
+		// Recreate caller context
+		Context = mol_ContextFactory.Create(mol_Broker);
+		Context.Id        = Payload.Id;
+		mol_ContextFactory.SetParams(Context, Payload.Params);
+		Context.ParentID  = Payload.ParentID;
+		Context.RequestID = Payload.RequestID;
+		Context.Caller    = Payload.Caller;
+		Context.Meta      = ?(Payload.Meta <> Undefined, Payload.Meta, New Map());
+		Context.Level     = Payload.Level;
+		Context.Tracing   = Payload.Tracing;
+		Context.NodeID    = Sender;
+
+		If Payload.Property("Timeout") And Payload.Timeout <> Undefined Then
+			Context.Options.Timeout = Payload.Timeout;
+		EndIf;
+		
+		ContextCache = mol_ReuseCalls.GetContextCache();
+		ContextCache.Add(Context);
+		
+		Data = Undefined;
+		Try
+			HandlerParts = StrSplit(Payload.Handler, ".");      
+			Parameters = New Array();
+			Parameters.Add(Context);
+			Data = mol_Helpers.ExecuteModuleFunction(HandlerParts[0], HandlerParts[1], Parameters);
+		Except             
+			Error = mol_Errors.ServiceError(Undefined,,,, ErrorInfo());
+			Error.Insert("context", Context);
+		EndTry;   
+		
+		ContextCache.Delete(ContextCache.UBound());
+		
+		Meta = Context.Meta;
+		
+	Except                      
+		ErrorInfo = ErrorInfo();  
+				
+		mol_Logger.Debug("Transit.RequestHandler",
+			"Request handle error",
+			DetailErrorDescription(ErrorInfo),
+			Metadata.CommonModules.mol_Transit
+		);
+		
+		Error = mol_Errors.RequestRejected("Request handle error",, ErrorInfo);		
+	EndTry;                                                                    
+	
+	Return mol_PacketFactory.Response(
+		Sender, 
+		Payload.Id, 
+		Error, 
+		Data, 
+		Meta
+	);
+		
 	
 EndFunction
 
-Function Send(Packet, RequestID = Undefined, TraceHeaders = Undefined)
+Function ResponseHandler(Packet) 
 	
-	Response = mol_Transporter_HTTP.Send(Publish(Packet), RequestID, TraceHeaders);
-	If mol_Internal.IsError(Response) Then
-		Return Response;
-	EndIf;    
-	mol_Internal.Unwrap(Response);
+	Payload = Packet.Payload;
+	Sender  = Packet.Sender;
 	
-	Response = mol_Broker.Deserialize(Response.GetBodyAsString());
-	
-	Return Response;
-	
-EndFunction
-
-Function ProcessRemoteNodeInfo(NodeID, Payload)
-	Return mol_Internal.NewResponse(Undefined, Payload);		
-EndFunction
-
-Function ResponseHandler(Packet)
-	
-	Id = Packet.Id;
-	
-	PendingRequests = mol_InternalReuseCalls.GetPendingRequests();
-	Request = PendingRequests.Get(Id);
+	PendingRequests = mol_ReuseCalls.GetPendingRequests();
+	Request = PendingRequests.Get(Payload.Id);
 	
 	// If not exists (timed out), we skip response processing
 	If Request = Undefined Then
@@ -221,8 +433,8 @@ Function ResponseHandler(Packet)
 				|%1
 				|, Sender:
 				|%2",
-				Packet.Id,
-				Packet.Sender
+				Payload.Id,
+				Sender
 			),
 			Undefined,
 			Metadata.CommonModules.mol_Transit
@@ -236,120 +448,46 @@ Function ResponseHandler(Packet)
 		StrTemplate(
 			"<= Response '%1' is received from '%2'.",
 			Request.Action.Name,
-			Packet.Sender	
+			Sender	
 		),
 		Undefined,
 		Metadata.CommonModules.mol_Transit
 	);  
 	
 	// Update nodeID in context (if it uses external balancer)
-	Request.Context.NodeID = Packet.Sender;
+	Request.Context.NodeID = Sender;
 
 	// Merge response meta with original meta
-	If TypeOf(Packet.Meta) = Type("Structure") Or TypeOf(Packet.Meta) = Type("Map") Then
+	If mol_Helpers.IsObject(Payload.Meta) Or mol_Helpers.IsMap(Payload.Meta) Then
 		If Request.Context.Meta = Undefined Then
 			Request.Context.Meta = New Map();
 		EndIf;
-		For Each KeyValue In Packet.Meta Do
+		For Each KeyValue In Payload.Meta Do
 			Request.Context.Meta.Insert(KeyValue.Key, KeyValue.Value);
 		EndDo;
 	EndIf;
 	
 	// Remove pending request
-	PendingRequests.Delete(Id);
+	PendingRequests.Delete(Payload.Id);
 	
-	If Not Packet.Success Then
-		Return mol_Internal.NewResponse(CreateErrorFromPayload(Packet.Error, Packet));
+	If Not Payload.Success Then
+		Return mol_Helpers.NewResponse(Payload.Error);
 	EndIf;
 	
-	Return mol_Internal.NewResponse(Undefined, Packet.Data);
+	Return mol_Helpers.NewResponse(Undefined, Payload.Data);
           	      
 EndFunction 
 
-Function RequestHandler(Payload)
-
-	RequestID = ?(Payload.RequestID <> Undefined, "with requestID '" + Payload.RequestID + "' ", "");
-	mol_Logger.Debug("Transit.RequestHandler",
-		StrTemplate("<= Request '%1' %2received from '%3' node.",
-			Payload.Action,                             
-			RequestID,
-			Payload.Sender
-		),
-		Payload,
-		Metadata.CommonModules.mol_Transit
-	);
+Function EventHandler(Packet)
 	
-	Try  
-		Broker = Eval("mol_Broker");
-		Endpoint = Broker.GetLocalActionEndpoint(Payload.Action);
-		If Endpoint = Undefined Then
-			Error = mol_Errors.ServiceNotAvailable(, New Structure(
-				"action, nodeID",
-				Payload.Action,
-				Payload.Sender
-			));
-			Return SendResponse(Payload.Sender, Payload.Id, Undefined, mol_Internal.NewResponse(Error));
-		EndIf;
-		
-		
-		// Recreate caller context
-		Context = mol_ContextFactory.Create(Broker, Undefined);
-		mol_ContextFactory.SetEndpoint(Context, Endpoint);
-		Context.Id        = Payload.Id;
-		mol_ContextFactory.SetParams(Context, Payload.Params);
-		Context.ParentID  = Payload.ParentID;
-		Context.RequestID = Payload.RequestID;
-		Context.Caller    = Payload.Caller;
-		Context.Meta      = ?(Payload.Meta <> Undefined, Payload.Meta, New Map());
-		Context.Level     = Payload.Level;
-		Context.Tracing   = Payload.Tracing;
-		Context.NodeID    = Payload.Sender;
-
-		If Payload.Property("Timeout") And Payload.Timeout <> Undefined Then
-			Context.Options.Timeout = Payload.Timeout;
-		EndIf;
-		
-		Response = mol_Internal.NewResponse();
-		
-		Try
-			HandlerParts = StrSplit(Endpoint.Action.Handler, ".");      
-			Parameters = New Array();
-			Parameters.Add(Context);
-			Response.Result = mol_Internal.ExecuteModuleFunction(HandlerParts[0], HandlerParts[1], Parameters);
-		Except             
-			Error = mol_Errors.ServiceError(Undefined,,,, ErrorInfo());
-			Error.Insert("context", Context);
-			Response.Error = Error;
-		EndTry;
-			
-		// Pointer to Context
-		Response.Insert("Context", Context);
-		
-		Return SendResponse(Payload.Sender, Payload.Id, Context.Meta, Response);
-		
-	Except                      
-		ErrorInfo = ErrorInfo();  
-				
-		mol_Logger.Debug("Transit.RequestHandler",
-			"Request handle error",
-			BriefErrorDescription(ErrorInfo),
-			Metadata.CommonModules.mol_Transit
-		);
-		
-		Error = mol_Errors.RequestRejected("Request handle error",, ErrorInfo);
-		Return SendResponse(Payload.Sender, Payload.Id, Context.Meta, mol_Internal.NewResponse(Error));		
-	EndTry;
-		
-	
-EndFunction
-
-Function EventHandler(Payload) 
+	Payload = Packet.Payload;
+	Sender  = Packet.Sender;
 	
 	RequestID = ?(Payload.RequestID <> Undefined, "with requestID '" + Payload.RequestID + "' ", "");
 	mol_Logger.Debug("Transit.EventHandler",
 		StrTemplate("Event '%1' received from '%2' node.",
 			Payload.Event,
-			Payload.Sender
+			Sender
 		),
 		Undefined,
 		Metadata.CommonModules.mol_Transit
@@ -361,67 +499,188 @@ Function EventHandler(Payload)
 	//		"."
 	//);
 	
-	Broker = Eval("mol_Broker");
 	// Create caller context   
-	Context = mol_ContextFactory.Create(Broker, Undefined);
+	Context = mol_ContextFactory.Create(mol_Broker);
 	Context.Id        = Payload.Id; 
 	Context.EventName = Payload.Event; 
 	If Payload.Property("Data") Then
 		mol_ContextFactory.SetParams(Context, Payload.Data);
 	EndIf;
 	Context.EventGroups  = Payload.Groups;
-	Context.EventType    = ?(Payload.Broadcast, "broadcast", "emit");
+	Context.EventType    = Payload.EventType;
 	Context.Meta         = ?(Payload.Meta <> Undefined, Payload.Meta, New Map());
 	Context.Level        = Payload.Level;
 	Context.Tracing      = Payload.Tracing;
 	Context.ParentID     = Payload.ParentID;
 	Context.RequestID    = Payload.RequestID;
 	Context.Caller       = Payload.Caller;
-	Context.NodeID       = Payload.Sender;
+	Context.NodeID       = Sender;
 	
-	// ensure the eventHandler resolves true when the event was handled successfully
-	Return mol_Broker.EmitLocalServices(Context);
+	ContextCache = mol_ReuseCalls.GetContextCache();
+	ContextCache.Add(Context);
+	
+	Error = Undefined;
+	Try
+		HandlerParts = StrSplit(Payload.Handler, ".");      
+		Parameters = New Array();
+		Parameters.Add(Context);
+		mol_Helpers.ExecuteModuleProcedure(HandlerParts[0], HandlerParts[1], Parameters);
+	Except             
+		Error = mol_Errors.ServiceError(Undefined,,,, ErrorInfo());
+		Error.Insert("context", Context);
+	EndTry;
+	
+	ContextCache.Delete(ContextCache.UBound());
+	
+	Return mol_PacketFactory.Response(Sender, Payload.Id, Error, Undefined, Context.Meta,);
 	
 EndFunction
 
-Function SendResponse(NodeID, Id, Meta, Response) 
+Function ChannelEventHandler(Packet)  
 	
-	IsError = mol_Internal.IsError(Response);
-
-	Payload = New Structure();
-	Payload.Insert("id", Id);
-	Payload.Insert("meta", Meta);
-	Payload.Insert("success", Not IsError);
-	Payload.Insert("data", Response.Result);
-			
-	If IsError Then
-		Payload.Insert("error", Response.Error);
+	Payload = Packet.Payload;
+	Sender  = Packet.Sender;
+	
+	RequestID = ?(Payload.RequestID <> Undefined, "with requestID '" + Payload.RequestID + "' ", "");
+	mol_Logger.Debug("Transit.ChannelEventHandler",
+		StrTemplate("Channel event received from '%1' node.",
+			Sender
+		),
+		Undefined,
+		Metadata.CommonModules.mol_Transit
+	);
+		
+	// Create caller context   
+	Context = mol_ContextFactory.Create(mol_Broker);
+	Context.Id        = Payload.Id;  
+	If Payload.Property("Data") Then
+		mol_ContextFactory.SetParams(Context, Payload.Data);
 	EndIf;
+	Context.Meta         = ?(Payload.Meta <> Undefined, Payload.Meta, New Map());
+	Context.Tracing      = Payload.Tracing;
+	Context.RequestID    = Payload.RequestID;
+	Context.NodeID       = Sender;
 	
-	Packet = Publish(NewPacket("PACKET_RESPONSE", NodeID, Payload));	
+	ContextCache = mol_ReuseCalls.GetContextCache();
+	ContextCache.Add(Context);
 	
-	Result = New Structure();
-	Result.Insert("cmd", Packet.Type);
-	Result.Insert("packet", Packet);
-	Return Result;
+	Error = Undefined;
+	Try
+		HandlerParts = StrSplit(Payload.Handler, ".");      
+		Parameters = New Array();
+		Parameters.Add(Context);
+		Parameters.Add(Payload.Raw);
+		mol_Helpers.ExecuteModuleProcedure(HandlerParts[0], HandlerParts[1], Parameters);
+	Except             
+		Error = mol_Errors.ServiceError(Undefined,,,, ErrorInfo());
+		Error.Insert("context", Context);
+	EndTry;
+	
+	ContextCache.Delete(ContextCache.UBound());
+	
+	Return mol_PacketFactory.Response(Sender, Payload.Id, Error, Undefined, Context.Meta);
 	
 EndFunction
 
-Function SendPong(Payload)
 
-	Return Publish(
-		NewPacket("PACKET_PONG", Payload.Sender, New Structure(
-			"time, id, arrived",
-			Payload.Time,
-			Payload.Id,
-			CurrentUniversalDateInMilliseconds()
-		))
-	);	
+Function ProcessDiscover(Sender)
+
+	Return mol_PacketFactory.Info(Sender, mol_Broker.GetNodeInfo());
+	
+EndFunction
+
+Function ProcessDiscoverServices(Sender)
+	
+	Services = New Array();
+	
+	Result = mol_Broker.GetServiceSchemas(True);
+	For Each ServiceSchema In Result.Services Do
+		If ServiceSchema.Name <> "$node" Then
+			Services.Add(ServiceSchema);
+		EndIf;
+	EndDo;           
+	
+	Target = "sidecar";
+	Return mol_PacketFactory.ServicesInfo(Target, Services);
+	
+EndFunction
+
+Function ProcessDisconnect(Sender)
+	
+EndFunction
+
+Function ProcessHeartbeatRequest(Target) Export
+
+	Return mol_PacketFactory.Heartbeat(Target);
+
+EndFunction
+
+Function SendPong(Packet)                  
+	
+	Return mol_PacketFactory.Pong(Packet.Sender, Packet.Payload.Time, Packet.Payload.Id);	
 		
 EndFunction
 
-Function CreateErrorFromPayload(Error, Payload)
-	Return Error;	
+Function ProcessPong(Packet)
+	
 EndFunction
+
+#EndRegion
+
+#EndRegion
+
+#Region Transporters
+
+#Region TransporterHTTP
+
+// Execute HTTP request to sidecar server
+//
+// @internal
+//
+// Parameters:
+//  Options - Structure          - Request options
+//  Body    - String, BinaryData - Request body
+// 
+// Returns:
+//  Structure:
+//  	* Error  - Structure    - Error description
+//      * Result - HTTPResponse - HTTP request response
+Function PostHTTPRequest(Options, Body)
+	
+	HTTPConnection = mol_Helpers.GetSidecarHTTPConnection();
+	#If Server And Not Server Then
+		HTTPConnection = New HTTPConnection();
+	#EndIf
+	
+	HTTPRequest = New HTTPRequest(Options.Path, Options.Headers); 	
+	mol_Helpers.SetRequestResponseBody(HTTPRequest, Body);
+	
+	Response = mol_Helpers.NewResponse();
+	Try     
+		Response.Result = HTTPConnection.Post(HTTPRequest);		
+	Except
+		Response.Error = mol_Errors.FromErrorInfo(ErrorInfo());
+	EndTry;      
+	
+	Return Response;
+	
+EndFunction
+
+Function NewServiceResponse(Packet)
+	
+	Headers = New Map();
+	Headers.Insert("content-type", "application/json");
+	
+	HTTPServiceResponse = New HTTPServiceResponse(200, , Headers);
+	ResponseString = mol_Broker.Serialize(Packet);
+	mol_Helpers.SetRequestResponseBody(HTTPServiceResponse, ResponseString);
+		
+	Return HTTPServiceResponse;
+	
+EndFunction
+
+#EndRegion
+
+#EndRegion
 
 #EndRegion

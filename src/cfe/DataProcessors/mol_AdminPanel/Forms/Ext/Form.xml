@@ -117,23 +117,23 @@
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="GroupRegistrationCommandsExtendedTooltip" id="148"/>
 							<ChildItems>
-								<Button name="RegisterNode" id="131">
+								<Button name="ConnectNode" id="131">
 									<Type>Hyperlink</Type>
 									<Visible>false</Visible>
-									<CommandName>Form.Command.RegisterNode</CommandName>
-									<ExtendedTooltip name="RegisterNodeExtendedTooltip" id="132"/>
+									<CommandName>Form.Command.ConnectNode</CommandName>
+									<ExtendedTooltip name="ConnectNodeExtendedTooltip" id="132"/>
 								</Button>
-								<Button name="UnregisterNode" id="133">
+								<Button name="DisconnectNode" id="133">
 									<Type>Hyperlink</Type>
 									<Visible>false</Visible>
-									<CommandName>Form.Command.UnregisterNode</CommandName>
-									<ExtendedTooltip name="UnregisterNodeExtendedTooltip" id="134"/>
+									<CommandName>Form.Command.DisconnectNode</CommandName>
+									<ExtendedTooltip name="DisconnectNodeExtendedTooltip" id="134"/>
 								</Button>
-								<Button name="CheckRegistration" id="145">
+								<Button name="UpdateNodeStatus" id="145">
 									<Type>Hyperlink</Type>
 									<Visible>false</Visible>
 									<CommandName>Form.Command.UpdateNodeStatus</CommandName>
-									<ExtendedTooltip name="CheckRegistrationExtendedTooltip" id="146"/>
+									<ExtendedTooltip name="UpdateNodeStatusExtendedTooltip" id="146"/>
 								</Button>
 							</ChildItems>
 						</UsualGroup>
@@ -366,7 +366,7 @@
 																</v8:item>
 															</ToolTip>
 															<ToolTipRepresentation>ShowRight</ToolTipRepresentation>
-															<PasswordMode>true</PasswordMode>
+															<PasswordMode>false</PasswordMode>
 															<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
 															<ContextMenu name="ConstantsSetmol_SidecarSecretKeyContextMenu" id="38"/>
 															<ExtendedTooltip name="ConstantsSetmol_SidecarSecretKeyExtendedTooltip" id="39">
@@ -601,13 +601,13 @@
 											<ShowTitle>false</ShowTitle>
 											<ExtendedTooltip name="GroupSidecarTestConnectionExtendedTooltip" id="46"/>
 											<ChildItems>
-												<Button name="SidecarTestConnection" id="47">
+												<Button name="TestSidecarConnection" id="47">
 													<Type>UsualButton</Type>
-													<CommandName>Form.Command.SidecarTestConnection</CommandName>
-													<ExtendedTooltip name="SidecarTestConnectionExtendedTooltip" id="48"/>
+													<CommandName>Form.Command.TestSidecarConnection</CommandName>
+													<ExtendedTooltip name="TestSidecarConnectionExtendedTooltip" id="48"/>
 												</Button>
 												<LabelField name="SidecarTestConnectionStatus" id="49">
-													<DataPath>SidecarTestConnectionStatus</DataPath>
+													<DataPath>TestSidecarConnectionStatus</DataPath>
 													<TitleLocation>None</TitleLocation>
 													<Hiperlink>true</Hiperlink>
 													<ContextMenu name="SidecarTestConnectionStatusContextMenu" id="50"/>
@@ -794,7 +794,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 							<ShowTitle>false</ShowTitle>
 							<ExtendedTooltip name="GroupSidecarPublicationSettingsExtendedTooltip" id="60"/>
 							<ChildItems>
-								<UsualGroup name="GroupSidecarPublicationConnection" id="61">
+								<UsualGroup name="GroupSidecarGatewayConnection" id="61">
 									<Title>
 										<v8:item>
 											<v8:lang>ru</v8:lang>
@@ -802,7 +802,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 										</v8:item>
 										<v8:item>
 											<v8:lang>en</v8:lang>
-											<v8:content>Publication connection</v8:content>
+											<v8:content>Gateway connection</v8:content>
 										</v8:item>
 									</Title>
 									<ToolTip>
@@ -810,12 +810,16 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 											<v8:lang>ru</v8:lang>
 											<v8:content>Group sidecar publication connection</v8:content>
 										</v8:item>
+										<v8:item>
+											<v8:lang>en</v8:lang>
+											<v8:content>Group sidecar gateway connection</v8:content>
+										</v8:item>
 									</ToolTip>
 									<Group>Vertical</Group>
 									<Behavior>Collapsible</Behavior>
 									<ControlRepresentation>Picture</ControlRepresentation>
 									<Representation>None</Representation>
-									<ExtendedTooltip name="GroupSidecarPublicationConnectionExtendedTooltip" id="62"/>
+									<ExtendedTooltip name="GroupSidecarGatewayConnectionExtendedTooltip" id="62"/>
 									<ChildItems>
 										<LabelDecoration name="Decoration1" id="74">
 											<HorizontalStretch>true</HorizontalStretch>
@@ -1100,7 +1104,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 																<InputField name="mol_NodeSecretKey" id="112">
 																	<DataPath>ConstantsSet.mol_NodeSecretKey</DataPath>
 																	<ToolTipRepresentation>ShowRight</ToolTipRepresentation>
-																	<PasswordMode>true</PasswordMode>
+																	<PasswordMode>false</PasswordMode>
 																	<ExtendedEditMultipleValues>true</ExtendedEditMultipleValues>
 																	<ContextMenu name="mol_NodeSecretKeyContextMenu" id="113"/>
 																	<ExtendedTooltip name="mol_NodeSecretKeyExtendedTooltip" id="114">
@@ -1140,16 +1144,16 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 											<ShowTitle>false</ShowTitle>
 											<ExtendedTooltip name="GroupTestPublicationAccessibilityExtendedTooltip" id="119"/>
 											<ChildItems>
-												<Button name="TestPublicationAccessibility" id="93">
+												<Button name="TestGatewayConnection" id="93">
 													<Type>UsualButton</Type>
-													<CommandName>Form.Command.TestPublicationAccessibility</CommandName>
-													<ExtendedTooltip name="TestPublicationAccessibilityExtendedTooltip" id="94"/>
+													<CommandName>Form.Command.TestGatewayConnection</CommandName>
+													<ExtendedTooltip name="TestGatewayConnectionExtendedTooltip" id="94"/>
 												</Button>
-												<LabelField name="TestPublicationAccessibilityStatus" id="120">
-													<DataPath>TestPublicationAccessibilityStatus</DataPath>
+												<LabelField name="TestGatewayConnectionStatus" id="120">
+													<DataPath>TestGatewayConnectionStatus</DataPath>
 													<TitleLocation>None</TitleLocation>
-													<ContextMenu name="TestPublicationAccessibilityStatusContextMenu" id="121"/>
-													<ExtendedTooltip name="TestPublicationAccessibilityStatusExtendedTooltip" id="122"/>
+													<ContextMenu name="TestGatewayConnectionStatusContextMenu" id="121"/>
+													<ExtendedTooltip name="TestGatewayConnectionStatusExtendedTooltip" id="122"/>
 													<Events>
 														<Event name="URLProcessing">TestPublicationAccessibilityStatusURLProcessing</Event>
 													</Events>
@@ -1245,6 +1249,104 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 				</UsualGroup>
 			</ChildItems>
 		</UsualGroup>
+		<UsualGroup name="GroupDebugging" id="181">
+			<Title>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Debugging</v8:content>
+				</v8:item>
+			</Title>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Group debugging</v8:content>
+				</v8:item>
+			</ToolTip>
+			<ExtendedTooltip name="GroupDebuggingExtendedTooltip" id="182"/>
+			<ChildItems>
+				<RadioButtonField name="mol_LogLevel" id="183">
+					<DataPath>ConstantsSet.mol_LogLevel</DataPath>
+					<TitleLocation>Left</TitleLocation>
+					<RadioButtonType>Auto</RadioButtonType>
+					<ColumnsCount>1</ColumnsCount>
+					<ChoiceList>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>ru</v8:lang>
+										<v8:content>Информация для отладки</v8:content>
+									</v8:item>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Debug</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xr:DesignTimeRef">Enum.mol_LogLevel.EnumValue.Debug</Value>
+							</xr:Value>
+						</xr:Item>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>ru</v8:lang>
+										<v8:content>Информационные сообщения</v8:content>
+									</v8:item>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Info</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xr:DesignTimeRef">Enum.mol_LogLevel.EnumValue.Info</Value>
+							</xr:Value>
+						</xr:Item>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>ru</v8:lang>
+										<v8:content>Предупреждения</v8:content>
+									</v8:item>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Warn</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xr:DesignTimeRef">Enum.mol_LogLevel.EnumValue.Warn</Value>
+							</xr:Value>
+						</xr:Item>
+						<xr:Item>
+							<xr:Presentation/>
+							<xr:CheckState>0</xr:CheckState>
+							<xr:Value xsi:type="FormChoiceListDesTimeValue">
+								<Presentation>
+									<v8:item>
+										<v8:lang>ru</v8:lang>
+										<v8:content>Ошибки</v8:content>
+									</v8:item>
+									<v8:item>
+										<v8:lang>en</v8:lang>
+										<v8:content>Error</v8:content>
+									</v8:item>
+								</Presentation>
+								<Value xsi:type="xr:DesignTimeRef">Enum.mol_LogLevel.EnumValue.Error</Value>
+							</xr:Value>
+						</xr:Item>
+					</ChoiceList>
+					<ContextMenu name="mol_LogLevelContextMenu" id="184"/>
+					<ExtendedTooltip name="mol_LogLevelExtendedTooltip" id="185"/>
+					<Events>
+						<Event name="OnChange">mol_LogLevelOnChange</Event>
+					</Events>
+				</RadioButtonField>
+			</ChildItems>
+		</UsualGroup>
 	</ChildItems>
 	<Attributes>
 		<Attribute name="ConstantsSet" id="2">
@@ -1262,18 +1364,22 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 				<Field>ConstantsSet.mol_NodeUser</Field>
 			</UseAlways>
 		</Attribute>
-		<Attribute name="SidecarTestConnectionStatus" id="4">
+		<Attribute name="TestSidecarConnectionStatus" id="4">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Sidecar test connection status</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Test sidecar connection status</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
 				<v8:Type>v8ui:FormattedString</v8:Type>
 			</Type>
 		</Attribute>
-		<Attribute name="TestPublicationAccessibilityResponse" id="3">
+		<Attribute name="TestGatewayConnectionResponse" id="3">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
@@ -1282,11 +1388,15 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			</Title>
 			<Type/>
 		</Attribute>
-		<Attribute name="SidecarTestConnectionResponse" id="7">
+		<Attribute name="TestSidecarConnectionResponse" id="7">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Sidecar test connection response</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Test sidecar connection response</v8:content>
 				</v8:item>
 			</Title>
 			<Type/>
@@ -1310,11 +1420,15 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 				</v8:StringQualifiers>
 			</Type>
 		</Attribute>
-		<Attribute name="TestPublicationAccessibilityStatus" id="5">
+		<Attribute name="TestGatewayConnectionStatus" id="5">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Test publication accesibility status</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Test gateway connection status</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -1325,11 +1439,11 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Статус узла</v8:content>
+					<v8:content>Состояние</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Node status</v8:content>
+					<v8:content>Status</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -1345,11 +1459,15 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			</Title>
 			<Type/>
 		</Attribute>
-		<Attribute name="NodeRegistered" id="9">
+		<Attribute name="NodeConnected" id="9">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Node registered</v8:content>
+				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Node connected</v8:content>
 				</v8:item>
 			</Title>
 			<Type>
@@ -1359,7 +1477,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 		</Attribute>
 	</Attributes>
 	<Commands>
-		<Command name="SidecarTestConnection" id="1">
+		<Command name="TestSidecarConnection" id="1">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
@@ -1375,8 +1493,12 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Sidecar test connection</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Test sidecar connection</v8:content>
+				</v8:item>
 			</ToolTip>
-			<Action>SidecarTestConnection</Action>
+			<Action>TestSidecarConnection</Action>
 		</Command>
 		<Command name="OpenInternalServices" id="2">
 			<Title>
@@ -1397,15 +1519,15 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 			</ToolTip>
 			<Action>OpenInternalServices</Action>
 		</Command>
-		<Command name="TestPublicationAccessibility" id="3">
+		<Command name="TestGatewayConnection" id="3">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Проверить подключение Sidecar к информационной базе</v8:content>
+					<v8:content>Проверить подключение к информационной базе</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Test publication accessibility</v8:content>
+					<v8:content>Test gateway connection</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>
@@ -1413,8 +1535,12 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 					<v8:lang>ru</v8:lang>
 					<v8:content>Test publication accessibility</v8:content>
 				</v8:item>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Test gateway connection</v8:content>
+				</v8:item>
 			</ToolTip>
-			<Action>TestPublicationAccessibility</Action>
+			<Action>TestGatewayConnection</Action>
 		</Command>
 		<Command name="OpenDynamicServices" id="4">
 			<Title>
@@ -1434,31 +1560,43 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 				</v8:item>
 			</ToolTip>
 		</Command>
-		<Command name="RegisterNode" id="5">
+		<Command name="ConnectNode" id="5">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Зарегистрировать узел</v8:content>
+					<v8:content>Подключить узел</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Register node</v8:content>
+					<v8:content>Connect node</v8:content>
 				</v8:item>
 			</Title>
-			<Action>RegisterNode</Action>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Connect node</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>ConnectNode</Action>
 		</Command>
-		<Command name="UnregisterNode" id="6">
+		<Command name="DisconnectNode" id="6">
 			<Title>
 				<v8:item>
 					<v8:lang>ru</v8:lang>
-					<v8:content>Отменить регистрацию узла</v8:content>
+					<v8:content>Отключить узел</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Unregister node</v8:content>
+					<v8:content>Disconnect node</v8:content>
 				</v8:item>
 			</Title>
-			<Action>UnregisterNode</Action>
+			<ToolTip>
+				<v8:item>
+					<v8:lang>en</v8:lang>
+					<v8:content>Disconnect node</v8:content>
+				</v8:item>
+			</ToolTip>
+			<Action>DisconnectNode</Action>
 		</Command>
 		<Command name="UpdateNodeStatus" id="7">
 			<Title>
@@ -1468,7 +1606,7 @@ v1.&lt;namespace&gt;.service_name.action_name</v8:content>
 				</v8:item>
 				<v8:item>
 					<v8:lang>en</v8:lang>
-					<v8:content>Update node status</v8:content>
+					<v8:content>Update status</v8:content>
 				</v8:item>
 			</Title>
 			<ToolTip>

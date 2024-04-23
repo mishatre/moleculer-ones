@@ -20,14 +20,13 @@ Procedure Service(Schema, Builder) Export
 	Builder.Meta("$description", "External node example service");
 	Builder.Meta("$official"   , False);
 
-	Action = Builder.Action("ExampleAction");
-	Action.Name        = "example-action";
+	Action = Builder.Action("example-action", "ExampleAction");
 	Action.Description = "This is example action";
-	//Action.Cache       = True;
 	
-	Event = Builder.Event("ExampleEvent");
-	Event.Name        = "example-event";
-	Event.Description = "This is example event";
+	Event = Builder.Event("example-event", "ExampleEvent");
+	Event.Description = "This is example event";   
+	
+	Builder.Channel("example-channel", "ExampleChannel");	
 	
 EndProcedure
 
@@ -87,13 +86,23 @@ EndFunction
 
 #Region Events
 
-Function ExampleEvent(Context) Export
+Procedure ExampleEvent(Context) Export
 	
 	mol_Logger.Warn("ExampleAction", ">> Received example-event event", Undefined, Metadata.CommonModules.ServiceExample);
 	
 	
-EndFunction
+EndProcedure
 
+#EndRegion 
+
+#Region Channels
+
+Procedure ExampleChannel(Context, Raw) Export
+
+	mol_Logger.Warn("ExampleChannel", ">> Received example-channel channel event", Undefined, Metadata.CommonModules.ServiceExample);		         
+	
+EndProcedure	
+	
 #EndRegion
 
 #EndRegion

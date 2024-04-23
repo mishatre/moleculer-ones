@@ -19,7 +19,7 @@ EndProcedure
 Procedure OnOpen(Cancel)
 	If ValueIsFilled(ConstantsSet.mol_NodeId) Then
 		NodeStatus = "Loading...";
-		AttachIdleHandler("CheckNodeRegistrationHandler", 2, True);
+		AttachIdleHandler("UpdateNodeStatusHandler", 1, True);
 	EndIf;
 EndProcedure
 
@@ -49,15 +49,15 @@ Procedure SidecarTestConnectionStatusURLProcessing(Item, FormattedStringURL, Sta
 	StandardProcessing = False;
 	Params = New Structure();
 	
-	If SidecarTestConnectionResponse.Error <> Undefined Then
-		Params.Insert("Error", SidecarTestConnectionResponse.Error); 	
+	If TestSidecarConnectionResponse.Error <> Undefined Then
+		Params.Insert("Error", TestSidecarConnectionResponse.Error); 	
 		OpenForm(
 			"CommonForm.mol_ErrorViewer", 
 			Params, 
 			ThisForm
 		);  
-	ElsIf SidecarTestConnectionResponse.Result <> Undefined Then		
-		Params.Insert("SidecarInfo", SidecarTestConnectionResponse.Result); 	
+	ElsIf TestSidecarConnectionResponse.Result <> Undefined Then		
+		Params.Insert("SidecarInfo", TestSidecarConnectionResponse.Result); 	
 		OpenForm(
 			"CommonForm.mol_SidecarInfo", 
 			Params, 
@@ -69,15 +69,15 @@ EndProcedure
 &AtClient
 Procedure TestPublicationAccessibilityStatusURLProcessing(Item, FormattedStringURL, StandardProcessing)
 	StandardProcessing = False;	
-	If TestPublicationAccessibilityResponse.Error <> Undefined Then
+	If TestGatewayConnectionResponse.Error <> Undefined Then
 		Params = New Structure();
-		Params.Insert("Error", TestPublicationAccessibilityResponse.Error); 	
+		Params.Insert("Error", TestGatewayConnectionResponse.Error); 	
 		OpenForm(
 			"CommonForm.mol_ErrorViewer", 
 			Params, 
 			ThisForm
 		);  
-	ElsIf TestPublicationAccessibilityResponse.Result <> Undefined Then		
+	ElsIf TestGatewayConnectionResponse.Result <> Undefined Then		
 	
 	EndIf;
 EndProcedure
@@ -107,7 +107,7 @@ EndProcedure
 &AtClient
 Procedure ConstantsSetmol_SidecarUseSSLOnChange(Item)
 	OnAttributeChange(Item);
-EndProcedure
+EndProcedure  
 
 &AtClient
 Procedure ConstantsSetmol_SidecarSecretKeyOnChange(Item)
@@ -232,18 +232,23 @@ Procedure mol_UseDynamicServicesOnChange(Item)
 	OnAttributeChange(Item);
 EndProcedure
 
+&AtClient
+Procedure mol_LogLevelOnChange(Item)
+	OnAttributeChange(Item);
+EndProcedure
+
 #EndRegion
 
 #Region FormCommandsEventHandlers
 
 &AtClient
-Procedure RegisterNode(Command)
-	RegisterNodeAtServer();
+Procedure ConnectNode(Command)
+	ConnectNodeAtServer();
 EndProcedure
 
 &AtClient
-Procedure UnregisterNode(Command)
-	UnregisterNodeAtServer();
+Procedure DisconnectNode(Command)
+	DisconnectNodeAtServer();
 EndProcedure
 
 &AtClient
@@ -252,19 +257,19 @@ Procedure UpdateNodeStatus(Item)
 EndProcedure
 
 &AtClient
-Procedure SidecarTestConnection(Command)
-	SidecarTestConnectionAtServer();
+Procedure TestSidecarConnection(Command)
+	TestSidecarConnectionAtServer();
 EndProcedure
 
 &AtClient
-Procedure TestPublicationAccessibility(Command)
-	TestPublicationAccessibilityAtServer();
+Procedure TestGatewayConnection(Command)
+	TestGatewayConnectionAtServer();
 EndProcedure
 
 &AtClient
 Procedure OpenInternalServices(Command)
 	OpenForm(
-		"DataProcessor.mol_AdminPanel.Form.InternalServices", 
+		"DataProcessor.mol_AdminPanel.Form.LocalServices", 
 		Undefined, 
 		ThisForm
 	);
@@ -288,14 +293,14 @@ EndFunction
 Function GetErrorString(Text = "Error ", Hyperlink = True)
 	Return New FormattedString(
 		New FormattedString(Text,,StyleColors.SpecialTextColor,,Undefined),
-		?(Hyperlink, New FormattedString("(show error)",,,,"Error"), "")
+		?(Hyperlink, New FormattedString("(show error)",,,,"Error"), New FormattedString(""))
 	)	
 EndFunction
 
 #Region IdleHandlers
 
 &AtClient
-Procedure CheckNodeRegistrationHandler()
+Procedure UpdateNodeStatusHandler()
 	UpdateNodeStatusAtServer()	
 EndProcedure
 
@@ -323,7 +328,7 @@ Procedure SetItemsAvailability(DataPathAttribute = "")
 	If DataPathAttribute = "ConstantsSet.mol_PublishServices" Or DataPathAttribute = "" Then
 		PublicationEnabled = ConstantsSet.mol_PublishServices;
 		Items.OpenInternalServices.Enabled                = PublicationEnabled;
-		Items.GroupSidecarPublicationConnection.Enabled   = PublicationEnabled;
+		Items.GroupSidecarGatewayConnection.Enabled       = PublicationEnabled;
 		Items.ConstantsSetmol_NodePublicationName.Enabled = PublicationEnabled;
 		Items.OpenInternalServices.Enabled = PublicationEnabled;
 		Items.GroupDynamicServices.Enabled = PublicationEnabled;
@@ -364,18 +369,21 @@ EndProcedure
 &AtServer
 Procedure SetRegistrationButtonAvailability()
 	
-	If NodeRegistered = True Then
-		Items.RegisterNode.Visible      = False;
-		Items.UnregisterNode.Visible    = True;
-		Items.CheckRegistration.Visible = True;
-	ElsIf NodeRegistered = False Then
-		Items.RegisterNode.Visible      = True;
-		Items.UnregisterNode.Visible    = False;
-		Items.CheckRegistration.Visible = False;
-	Else
-		Items.RegisterNode.Visible      = False;
-		Items.UnregisterNode.Visible    = False;
-		Items.CheckRegistration.Visible = True;
+	If NodeConnected = True Then
+		Items.ConnectNode.Title        = "Update node";
+		Items.ConnectNode.Visible      = False;
+		Items.DisconnectNode.Visible   = True;
+		Items.UpdateNodeStatus.Visible = True;
+	ElsIf NodeConnected = False Then   
+		Items.ConnectNode.Title        = "Connect node";
+		Items.ConnectNode.Visible      = True;
+		Items.DisconnectNode.Visible   = False;
+		Items.UpdateNodeStatus.Visible = False;
+	Else          
+		Items.ConnectNode.Title        = "Connect node";
+		Items.ConnectNode.Visible      = False;
+		Items.DisconnectNode.Visible   = False;
+		Items.UpdateNodeStatus.Visible = True;
 	EndIf;
 	
 EndProcedure
@@ -448,19 +456,21 @@ EndFunction
 #Region Node
 
 &AtServer
-Procedure RegisterNodeAtServer()
+Procedure ConnectNodeAtServer()
 
 	NodeStatus = "Loading...";
-	RegistrationResponse = mol_Internal.RegisterNode();
-	If mol_Internal.IsError(RegistrationResponse) Then
-		NodeRegistered = Undefined;
+	RegistrationResponse = mol_Transit.SendNodeInfo();
+	If mol_Helpers.IsError(RegistrationResponse) Then
+		NodeConnected = Undefined;
 		NodeStatus     = GetErrorString();		
-	ElsIf RegistrationResponse = True Then
-		NodeRegistered = True;
-		NodeStatus     = GetSuccessString("Registered");
 	Else
-		NodeRegistered = Undefined;
-		NodeStatus = GetErrorString("Incorrect response");
+		If RegistrationResponse = True Then
+			NodeConnected = True;
+			NodeStatus     = GetSuccessString("Connected");
+		Else
+			NodeConnected = Undefined;
+			NodeStatus    = GetErrorString("Couldn't connect", False);
+		EndIf;
 	EndIf;    
 	
 	SetRegistrationButtonAvailability();
@@ -468,21 +478,20 @@ Procedure RegisterNodeAtServer()
 EndProcedure
 
 &AtServer
-Procedure UnregisterNodeAtServer()
+Procedure DisconnectNodeAtServer()
 	
 	NodeStatus = "Loading...";	
-	RegistrationResponse = mol_Internal.RemoveNode();	
-	If mol_Internal.IsError(RegistrationResponse) Then
-		NodeRegistered = Undefined;
+	RegistrationResponse = mol_Transit.Disconnect();	
+	If mol_Helpers.IsError(RegistrationResponse) Then
+		NodeConnected = Undefined;
 		NodeStatus     = GetErrorString();		
 	Else    
-		mol_Internal.Unwrap(RegistrationResponse);
 		If RegistrationResponse = True Then
-			NodeRegistered = False;
-			NodeStatus     = GetDefaultString("Unregistered");
+			NodeConnected = False;
+			NodeStatus     = GetDefaultString("Disconnected");
 		Else
-			NodeRegistered = Undefined;
-			NodeStatus = GetErrorString("Incorrect response");
+			NodeConnected = Undefined;
+			NodeStatus = GetErrorString("Couldn't disconnect");
 		EndIf;
 	EndIf;    
 	
@@ -496,31 +505,26 @@ Procedure UpdateNodeStatusAtServer()
 	NodeID = mol_Broker.NodeID();
 	
 	NodeStatus = "Loading...";	
-	RegistrationResponse = Undefined;
-	Response = mol_Internal.GetNodesList();	
-	If mol_Internal.IsError(Response) Then
+	RegistrationResponse = Undefined; 
+	Response = mol_Transit.DiscoverNodes();	
+	If mol_Helpers.IsError(Response) Then
 		RegistrationResponse = Response;
-		NodeRegistered = Undefined;
+		NodeConnected = Undefined;
 		NodeStatus     = GetErrorString();		
-	Else    
-		If TypeOf(Response) = Type("Array") Then
-			Registered = False;
-			For Each NodeInfo In Response Do
-				If NodeInfo.Id = NodeID Then
-					Registered = True;
-					Break;
-				EndIf;
-			EndDo;    
-			If Registered Then
-				NodeRegistered = True;
-				NodeStatus     = GetSuccessString("Registered");		
-			Else
-				NodeRegistered = False;
-				NodeStatus     = GetDefaultString("Unregistered");	
+	Else        
+		Info = Undefined;
+		For Each NodeInfo In Response.SidecarNodes Do
+			If NodeInfo.Id = mol_Broker.NodeID() Then
+				Info = NodeInfo;
+				Break;
 			EndIf;
+		EndDo;
+		If Info <> Undefined Then
+			NodeConnected = True;
+			NodeStatus     = GetSuccessString("Connected");
 		Else
-			NodeRegistered = Undefined;
-			NodeStatus = GetErrorString("Incorrect response");
+			NodeConnected = False;
+			NodeStatus     = GetDefaultString("Disconnected");
 		EndIf;
 	EndIf;    
 	
@@ -533,23 +537,14 @@ EndProcedure
 #Region Connection
 
 &AtServer
-Procedure SidecarTestConnectionAtServer()
+Procedure TestSidecarConnectionAtServer()
 	
-	SidecarTestConnectionStatus   = "Loading..."; 
-	SidecarTestConnectionResponse = mol_Transit.DiscoverSidecarNode();
-	If mol_Internal.IsError(SidecarTestConnectionResponse) Then
-		SidecarTestConnectionStatus = GetErrorString();		
-	Else    
-		mol_Internal.Unwrap(SidecarTestConnectionResponse);
-		If TypeOf(SidecarTestConnectionResponse) <> Type("Structure") 
-			Or Not SidecarTestConnectionResponse.Property("name") Then
-			SidecarTestConnectionStatus = GetErrorString(
-				"Connection was successful, but sidecar return incorrect response",
-				False
-			);                              
-		Else
-			SidecarTestConnectionStatus = GetSuccessString("Connection successfull ", True);
-		EndIf;
+	TestSidecarConnectionStatus   = "Loading..."; 
+	TestGatewayConnectionResponse = mol_Transit.DiscoverNodes();
+	If mol_Helpers.IsError(TestSidecarConnectionResponse) Then
+		TestSidecarConnectionStatus = GetErrorString();		
+	Else  
+		TestSidecarConnectionStatus = GetSuccessString("Connection successfull ", True);
 	EndIf;
 	
 EndProcedure
@@ -559,25 +554,22 @@ EndProcedure
 #Region Publication
 
 &AtServer
-Procedure TestPublicationAccessibilityAtServer()
+Procedure TestGatewayConnectionAtServer()
 	
-	TestPublicationAccessibilityStatus   = ""; 
-	TestPublicationAccessibilityResponse = Undefined;
+	TestGatewayConnectionStatus   = ""; 
+	TestGatewayConnectionResponse = Undefined;
 	
-	Response = mol_Internal.PingLocalGateway();
-	TestPublicationAccessibilityResponse = Response;
+	Response = mol_Broker.PingLocalGateway();
+	TestGatewayConnectionResponse = Response;
 	
-	If mol_Internal.IsError(Response) Then
-		TestPublicationAccessibilityStatus = New FormattedString(
-			New FormattedString("Sidecar connection error ",,StyleColors.SpecialTextColor,,Undefined),
-			New FormattedString("(show error)",,,,"Error")
-		);		
+	If mol_Helpers.IsError(Response) Then
+		TestGatewayConnectionStatus = GetErrorString("Sidecar connection error ");		
 	ElsIf Response.Result = "pong" Then     
-		TestPublicationAccessibilityStatus  = New FormattedString(
+		TestGatewayConnectionStatus  = New FormattedString(
 			New FormattedString("Connection to gateway successfull ",,StyleColors.AccentColor,,Undefined)
 		); 
 	Else
-		TestPublicationAccessibilityStatus = New FormattedString(
+		TestGatewayConnectionStatus = New FormattedString(
 			"Connection to gateway was successful, but gateway return incorrect response",
 			,
 			StyleColors.SpecialTextColor

@@ -2,24 +2,24 @@
 #Region Public 
 
 Function Broker() Export
-	Return Eval("mol_Broker");	
+	Return mol_Broker;	
 EndFunction
 
-Function Call(Ctx, ActionName, Params = Undefined, _Opts = Undefined) Export 
-	Opts = New Structure();
-	Opts.Insert("parentCtx", Ctx);
-	If _Opts <> Undefined Then
-		For Each KeyValue In _Opts Do
-			Opts.Insert(KeyValue.Key, KeyValue.Value);
-		EndDo;
+Function Call(ActionName, Params = Undefined, Opts = Undefined) Export 
+	
+	Context = GetCurrentContext();
+	
+	If Opts = Undefined Then
+		Opts = New Structure();
 	EndIf;
+	Opts.Insert("parentCtx", Context);
 		
 	Response = mol_Broker.Call(ActionName, Params, Opts);
 	
 	If Response.Property("Context") Then
 		If Response.Context.Meta <> Undefined Then
 			For Each KeyValue In Response.Context.Meta Do
-				Ctx.Meta.Insert(KeyValue.Key, KeyValue.Value);
+				Context.Meta.Insert(KeyValue.Key, KeyValue.Value);
 			EndDo;
 		EndIf;
 	EndIf; 
@@ -28,17 +28,38 @@ Function Call(Ctx, ActionName, Params = Undefined, _Opts = Undefined) Export
 	
 EndFunction 
 
-Function MCall(Ctx, Def, _Opts) Export
+Function MCall(Def, Opts = Undefined) Export
+
+	Context = GetCurrentContext();
+	
+	If Opts = Undefined Then
+		Opts = New Structure();
+	EndIf;
+	Opts.Insert("parentCtx", Context);
+		
+	Response = mol_Broker.MCall(Def, Opts);
+	
+	Return Response;
 	
 EndFunction
 
-Function Emit(Ctx, EventName, Data, Opts) Export
+Function Emit(EventName, Data = Undefined, Opts = Undefined) Export
+
+	Context = GetCurrentContext();
+	
+	If Opts = Undefined Then
+		Opts = New Structure();
+	EndIf;
+	Opts.Insert("parentCtx", Context);
+		
+	Response = mol_Broker.Emit(EventName, Data, Opts);
+		
+	Return Response;
+
 	
 EndFunction
 
-Function Broadcast(Ctx, EventName, Data, Opts) Export
-	
-EndFunction
+#Region Span
 
 Function StartSpan(Ctx, Name, Opts) Export
 	
@@ -48,6 +69,8 @@ Function FinishSpan(Ctx, Span, Time) Export
 	
 EndFunction
 
+#EndRegion
+
 Function ToJSON(Ctx) Export
 	
 EndFunction
@@ -56,13 +79,21 @@ EndFunction
 
 #Region Protected
 
-Function Create(Broker, Endpoint, Params = Undefined, Opts = Undefined) Export
+Function GetCurrentContext() Export
+	ContextCache = mol_ReuseCalls.GetContextCache();  
+	If ContextCache.Count() = 0 Then
+		Return Null;
+	EndIf;
+	Return ContextCache.Get(ContextCache.UBound());
+EndFunction
+
+Function Create(Broker, Params = Undefined, Opts = Undefined) Export
 	
 	If Opts = Undefined Then
 		Opts = New Structure();
 	EndIf;
 
-	Context = ContextConstructor(Broker, Endpoint);
+	Context = ContextConstructor(Broker);
 	
 	If Params <> Undefined Then
 		SetParams(Context, Params);	
@@ -77,37 +108,37 @@ Function Create(Broker, Endpoint, Params = Undefined, Opts = Undefined) Export
 	// RequestID
 	If Opts.Property("RequestID") And Opts.RequestID <> Undefined Then
 		Context.RequestID = Opts.RequestID;
-	ElsIf Opts.Property("ParentCtx") And TypeOf(Opts.ParentCtx) = Type("Structure") 
+	ElsIf Opts.Property("ParentCtx") And mol_Helpers.IsObject(Opts.ParentCtx) 
 			And Opts.ParentCtx.Property("RequestID") And Opts.ParentCtx.RequestID <> Undefined Then
 		Context.RequestID = Opts.ParentCtx.RequestID;
 	EndIf;
 
 	// Meta          
-	If Opts.Property("ParentCtx") And TypeOf(Opts.ParentCtx) = Type("Structure")
+	If Opts.Property("ParentCtx") And mol_Helpers.IsObject(Opts.ParentCtx)
 			And Opts.ParentCtx.Property("Meta") And Opts.ParentCtx.Meta <> Undefined Then
 		For Each KeyValue In Opts.ParentCtx.Meta Do 
 			Context.Meta.Insert(KeyValue.Key, KeyValue.Value);
 		EndDo;     
 	EndIf;
 		
-	If Opts.Property("Meta") And (TypeOf(Opts.Meta) = Type("Structure") Or TypeOf(Opts.Meta) = Type("Map")) Then
+	If Opts.Property("Meta") And (mol_Helpers.IsObject(Opts.Meta) Or mol_Helpers.IsMap(Opts.Meta)) Then
 		For Each KeyValue In Opts.Meta Do 
 			Context.Meta.Insert(KeyValue.Key, KeyValue.Value);
 		EndDo;            
 	EndIf;
 	
 	// ParentID, Level, Caller, Tracing
-	If Opts.Property("ParentCtx") And TypeOf(Opts.ParentCtx) = Type("Structure") Then
+	If Opts.Property("ParentCtx") And mol_Helpers.IsObject(Opts.ParentCtx) Then
 		Context.Tracing = Opts.ParentCtx.Tracing;
 		Context.Level = Opts.ParentCtx.Level + 1;
 		
-		If Opts.ParentCtx.Property("Span") And TypeOf(Opts.ParentCtx.Span) = Type("Structure") Then
+		If Opts.ParentCtx.Property("Span") And mol_Helpers.IsObject(Opts.ParentCtx.Span) Then
 			Context.ParentID = Opts.ParentCtx.Span.Id;
 		Else
 			Context.ParentID = Opts.ParentCtx.Id;
 		EndIf;
 		
-		If Opts.ParentCtx.Property("Service") And TypeOf(Opts.ParentCtx.Service) = Type("Structure") Then 
+		If Opts.ParentCtx.Property("Service") And mol_Helpers.IsObject(Opts.ParentCtx.Service) Then 
 			Context.Caller = Opts.ParentCtx.Service.FullName;
 		EndIf;
 	EndIf;
@@ -118,7 +149,7 @@ Function Create(Broker, Endpoint, Params = Undefined, Opts = Undefined) Export
 	EndIf;
 
 	// Parent span            
-	If Opts.Property("ParentSpan") And TypeOf(Opts.ParentSpan) = Type("Structure") Then 
+	If Opts.Property("ParentSpan") And mol_Helpers.IsObject(Opts.ParentSpan) Then 
 		Context.ParentID = Opts.ParentSpan.Id;
 		Context.RequestID = Opts.ParentSpan.TraceID;
 		Context.Tracing = Opts.ParentSpan.Sampled;
@@ -136,13 +167,13 @@ EndFunction
 Function SetEndpoint(Context, Endpoint) Export
 
 	Context.Endpoint = Endpoint;
-	If TypeOf(Endpoint) = Type("Structure") Then
+	If mol_Helpers.IsObject(Endpoint) Then
 		Context.NodeID = Endpoint.Id;
-		If Endpoint.Property("Action") And TypeOf(Endpoint.Action) = Type("Structure") Then
+		If Endpoint.Property("Action") And mol_Helpers.IsObject(Endpoint.Action) Then
 			Context.Action = Endpoint.Action;
 			Context.Service = Context.Action.Service;
 			Context.Event = Undefined;
-		ElsIf Endpoint.Property("Event") And TypeOf(Endpoint.Event) = Type("Structure") Then
+		ElsIf Endpoint.Property("Event") And mol_Helpers.IsObject(Endpoint.Event) Then
 			Context.Event = Endpoint.Event;
 			Context.Service = Context.Event.Service;
 			Context.Action = Undefined;
@@ -166,23 +197,21 @@ EndFunction
 
 #Region Private
 
-Function ContextConstructor(Broker, Endpoint)
+Function ContextConstructor(Broker)
 	
-	Context = NewContext();
+	Context = NewContext(); 
+	Context.This = mol_ContextFactory; 
 	Context.Broker = Broker;
 
 	If Context.Broker <> Undefined Then
 		Context.NodeID = Context.Broker.NodeID();
 		Context.Id     = Context.Broker.GenerateUid();
 	EndIf;                                     
-	
-	If TypeOf(Endpoint) = Type("Structure") Then
-		SetEndpoint(Context, Endpoint);
-	EndIf;
 		
 	Context.Level = 1;
 
 	Context.RequestID = Context.Id;
+	Context.Caller = Context.Broker.NodeID();
 
 	Return Context;
 	
@@ -190,7 +219,8 @@ EndFunction
 
 Function NewContext()
 
-	Result = new Structure();
+	Result = new Structure();          
+	Result.Insert("this"  , Undefined);
 	Result.Insert("broker", Undefined);
 	Result.Insert("nodeID", Undefined);
 	Result.Insert("id"    , Undefined);
@@ -234,6 +264,5 @@ Function NewContext()
 	Return Result;
 	
 EndFunction
-
 
 #EndRegion

@@ -3,7 +3,7 @@
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	If Not Parameters.Property("SidecarInfo") Then
-		SidecarInfo = mol_Internal.GetSidecarNodeInfo();		
+		Raise "No info";		
 	Else
 		SidecarInfo = Parameters.SidecarInfo;
 	EndIf;
